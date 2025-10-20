@@ -21,7 +21,8 @@ repositories {
 
 dependencies {
 
-    implementation 'io.c102:ourohead:1.0.0'
+//    implementation 'io.c102:ourohead:1.0.0'
+    implementation 'com.c102:ourotail-sdk:0.0.1-SNAPSHOT'
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
