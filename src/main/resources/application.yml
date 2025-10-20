@@ -1,0 +1,11 @@
+# 라이브러리 사용하는 앱의 application.yml
+k6:
+  runner:
+    docker-host: "tcp://localhost:2375"
+    controller:
+      enabled: true
+
+logging:
+  level:
+    com.c102.ourotail: DEBUG
+    com.github.dockerjava: DEBUG
