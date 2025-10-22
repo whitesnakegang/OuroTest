@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>v3/api-docs 스니펫 생성기</title>
+    <style>
+        body { font-family: sans-serif; display: flex; gap: 20px; padding: 20px; }
+        #sidebar { width: 40%; border-right: 2px solid #eee; padding-right: 20px; }
+        #content { width: 60%; }
+        pre { background-color: #f4f4f4; padding: 15px; border-radius: 5px; white-space: pre-wrap; word-break: break-all; }
+        button { 
+            font-size: 14px; 
+            padding: 8px 12px; 
+            margin: 4px; 
+            cursor: pointer; 
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        button:hover { background-color: #e0e0e0; }
+        .endpoint-btn { display: inline-block; width: auto; }
+        .method-get { border-left: 4px solid #61affe; }
+        .method-post { border-left: 4px solid #49cc90; }
+        .method-put { border-left: 4px solid #fca130; }
+        .method-delete { border-left: 4px solid #f93e3e; }
+    </style>
+</head>
+<body>
+
+    <div id="sidebar">
+        <h1>API 엔드포인트 목록</h1>
+        <p>/api/openapi.json 에서 동적으로 불러옴</p>
+        <div id="endpoint-list">
+            <p>Loading...</p>
+        </div>
+    </div>
+
+    <div id="content">
+        <h2>생성된 클라이언트 코드 스니펫</h2>
+        <pre id="output">엔드포인트를 클릭하세요...</pre>
+    </div>
+    <!-- 여러 CDN URL 시도 -->
+    <script src="https://unpkg.com/openapi-snippet@0.4.0/dist/openapi-snippet.min.js"></script>
+    <!-- 백업 CDN -->
+    <script>
+        // 첫 번째 CDN이 실패하면 두 번째 시도
+        if (typeof window.OpenAPISnippet === 'undefined') {
+            console.log('첫 번째 CDN 실패, 두 번째 CDN 시도');
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/openapi-snippet@0.4.0/dist/openapi-snippet.min.js';
+            document.head.appendChild(script);
+        }
+    </script>
+    <script>
+        // 라이브러리 로드 디버깅
+        console.log('페이지 로드 시작');
+        
+        // 라이브러리 로드 상태 확인 함수
+        function checkLibraryStatus() {
+            console.log('=== CDN 라이브러리 로드 상태 확인 ===');
+            console.log('window.OpenAPISnippet:', typeof window.OpenAPISnippet);
+            console.log('window.openapiSnippet:', typeof window.openapiSnippet);
+            console.log('window.openapi:', typeof window.openapi);
+            
+            // CDN에서 로드된 라이브러리인지 확인
+            if (typeof window.OpenAPISnippet !== 'undefined') {
+                console.log('✅ CDN에서 OpenAPISnippet 라이브러리 로드 성공');
+                console.log('OpenAPISnippet 객체:', window.OpenAPISnippet);
+            } else {
+                console.log('❌ CDN에서 OpenAPISnippet 라이브러리 로드 실패');
+                
+                // 우리가 만든 대안 솔루션이 있는지 확인
+                if (typeof window.OpenAPISnippet !== 'undefined' && window.OpenAPISnippet.getEndpointSnippets) {
+                    console.log('✅ 로컬 대안 솔루션 활성화됨');
+                } else {
+                    console.log('❌ 로컬 대안 솔루션도 없음');
+                }
+            }
+            
+            // 모든 전역 변수 중 openapi 관련 찾기 (우리 함수 제외)
+            const openapiVars = Object.keys(window).filter(key => 
+                (key.toLowerCase().includes('openapi') || 
+                 key.toLowerCase().includes('snippet')) &&
+                key !== 'generateSnippet' // 우리가 만든 함수 제외
+            );
+            console.log('CDN에서 로드된 OpenAPI 관련 전역 변수들:', openapiVars);
+        }
+        
+        // 페이지 로드 후 라이브러리 상태 확인
+        setTimeout(checkLibraryStatus, 1000);
+        // openapi.yml을 JSON으로 변환한 API 엔드포인트 사용
+        const specUrl = '/api/openapi.json'; 
+        let parsedSpec = null; // 파싱된 spec을 저장할 전역 변수
+
+        // (A) 페이지 로드 시 /v3/api-docs 호출
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch(specUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                parsedSpec = await response.json(); 
+                console.log('OpenAPI Spec 로드 성공:', parsedSpec);
+                
+                // (B) 엔드포인트 목록을 동적으로 렌더링
+                renderEndpointList(parsedSpec.paths);
+
+            } catch (error) {
+                console.error('Spec 로드 실패:', error);
+                document.getElementById('endpoint-list').innerHTML = `<p style="color:red;">Error: /api/openapi.json 로드 실패. 서버가 실행 중인지 확인하세요.</p>`;
+            }
+        });
+
+        // (B) 엔드포인트 목록을 UI에 그리는 함수 (변경 없음)
+        function renderEndpointList(paths) {
+            const listContainer = document.getElementById('endpoint-list');
+            listContainer.innerHTML = ''; 
+
+            for (const path in paths) {
+                for (const method in paths[path]) {
+                    const button = document.createElement('button');
+                    button.textContent = `${method.toUpperCase()} ${path}`;
+                    button.classList.add('endpoint-btn', `method-${method.toLowerCase()}`);
+                    button.addEventListener('click', () => {
+                        generateSnippet(path, method);
+                    });
+                    listContainer.appendChild(button);
+                    listContainer.appendChild(document.createElement('br'));
+                }
+            }
+        }
+
+        // (C) 특정 엔드포인트의 스니펫을 생성하는 함수
+        function generateSnippet(path, method) {
+            if (!parsedSpec) {
+                alert('Spec이 아직 로드되지 않았습니다.');
+                return;
+            }
+
+            // 라이브러리 로드 확인 (여러 가능한 전역 변수명 체크)
+            let openapiLib = null;
+            if (typeof window.OpenAPISnippet !== 'undefined') {
+                openapiLib = window.OpenAPISnippet;
+                console.log('OpenAPISnippet 라이브러리 발견');
+            } else if (typeof window.openapiSnippet !== 'undefined') {
+                openapiLib = window.openapiSnippet;
+                console.log('openapiSnippet 라이브러리 발견');
+            } else if (typeof window.openapi !== 'undefined' && window.openapi.snippet) {
+                openapiLib = window.openapi.snippet;
+                console.log('openapi.snippet 라이브러리 발견');
+            } else {
+                console.error('OpenAPI Snippet 라이브러리를 찾을 수 없습니다.');
+                console.log('사용 가능한 전역 변수들:', Object.keys(window).filter(key => 
+                    key.toLowerCase().includes('openapi') || 
+                    key.toLowerCase().includes('snippet')
+                ));
+                document.getElementById('output').textContent = 'Error: OpenAPI Snippet 라이브러리 로드 실패. 브라우저 개발자 도구 콘솔을 확인하세요.';
+                return;
+            }
+
+            try {
+                // 문서에 명시된 지원되는 targets 사용
+                const targets = [
+                    'shell_curl', 
+                    'javascript_xhr', 
+                    'node_native',
+                    'python_requests',
+                    'java_okhttp'
+                ];
+                
+                // 감지된 라이브러리 사용
+                const snippets = openapiLib.getEndpointSnippets(
+                    parsedSpec, // 1. 전체 Spec
+                    path,       // 2. 경로
+                    method,     // 3. 메서드
+                    targets     // 4. 타겟
+                );
+                
+                // (D) 결과를 <pre> 태그에 표시
+                const outputElement = document.getElementById('output');
+                outputElement.textContent = JSON.stringify(snippets, null, 2); 
+                console.log(`[${method} ${path}] 스니펫:`, snippets);
+
+            } catch (error) {
+                console.error('스니펫 생성 오류:', error);
+                document.getElementById('output').textContent = `Error: 스니펫 생성 실패\n${error.message}`;
+            }
+        }
+    </script>
+
+</body>
+</html>
