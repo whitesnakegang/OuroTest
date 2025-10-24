@@ -21,7 +21,7 @@ repositories {
 
 dependencies {
 
-    implementation 'io.ouroboros:ourohead:1.0.0'
+    implementation 'kr.co:ouroboros:0.0.1-SNAPSHOT'
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
