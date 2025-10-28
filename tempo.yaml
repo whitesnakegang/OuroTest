@@ -1,0 +1,22 @@
+# This file is managed by Ouroboros SDK
+# Source: ../ouroboros/backend/src/main/resources/ouroboros/tempo.yaml
+# Do not modify this file directly.
+
+server:
+  http_listen_port: 3200
+
+storage:
+  trace:
+    backend: local
+    local:
+      path: /var/tempo/traces
+
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318
+
