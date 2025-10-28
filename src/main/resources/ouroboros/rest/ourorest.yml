@@ -1,0 +1,97 @@
+openapi: 3.1.0
+info:
+  title: API Documentation
+  version: 1.0.0
+paths:
+  /api/users:
+    post:
+      summary: Create a new user
+      description: Simple ref test
+      deprecated: false
+      tags:
+      - Users
+      requestBody:
+        description: User object
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      x-ouroboros-id: a886a792-b09c-40f2-b4ae-62f74c3c2009
+      x-ouroboros-progress: mock
+      x-ouroboros-tag: none
+      x-ouroboros-isvalid: true
+components:
+  schemas:
+    Address:
+      type: object
+      title: Address Schema
+      description: A physical address
+      properties:
+        street:
+          type: string
+          description: Street address
+          x-ouroboros-mock: '{{$address.streetAddress}}'
+        city:
+          type: string
+          description: City name
+          x-ouroboros-mock: '{{$address.city}}'
+        zipCode:
+          type: string
+          description: Postal code
+          x-ouroboros-mock: '{{$address.zipCode}}'
+      required:
+      - street
+      - city
+    User:
+      type: object
+      title: User Schema
+      description: A user entity
+      properties:
+        id:
+          type: string
+          description: User ID
+          x-ouroboros-mock: '{{$random.uuid}}'
+        name:
+          type: string
+          description: User name
+          x-ouroboros-mock: '{{$name.fullName}}'
+        email:
+          type: string
+          description: User email
+          x-ouroboros-mock: '{{$internet.email}}'
+      required:
+      - id
+      - name
+    UserWithAddress:
+      type: object
+      title: User with Address
+      description: User with nested address reference
+      properties:
+        id:
+          type: string
+          description: User ID
+          x-ouroboros-mock: '{{$random.uuid}}'
+        name:
+          type: string
+          description: User name
+          x-ouroboros-mock: '{{$name.fullName}}'
+        address:
+          $ref: '#/components/schemas/Address'
+        previousAddresses:
+          type: array
+          description: Previous addresses
+          items:
+            $ref: '#/components/schemas/Address'
+          minItems: 0
+          maxItems: 5
+      required:
+      - id
+      - name
