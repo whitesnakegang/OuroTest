@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OuroTest API Try-It</title>
+    <style>
+        :root { color-scheme: light dark; }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"; }
+        header { padding: 16px 20px; border-bottom: 1px solid #e5e7eb; position: sticky; top: 0; background: inherit; backdrop-filter: blur(8px); }
+        header h1 { margin: 0; font-size: 18px; }
+        main { padding: 20px; display: grid; gap: 16px; grid-template-columns: 1fr 1fr; max-width: 1200px; margin: 0 auto; }
+        @media (max-width: 1000px) { main { grid-template-columns: 1fr; } }
+        .panel { border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; }
+        .panel > .title { padding: 12px 14px; font-weight: 600; border-bottom: 1px solid #e5e7eb; background: #fafafa; }
+        .panel > .content { padding: 14px; display: grid; gap: 12px; }
+        .row { display: grid; gap: 8px; }
+        .row.cols { grid-template-columns: 140px 1fr; align-items: center; }
+        label { font-size: 12px; color: #6b7280; }
+        input, select, textarea { width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; background: inherit; color: inherit; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+        textarea { min-height: 140px; resize: vertical; }
+        .controls { display: flex; gap: 10px; flex-wrap: wrap; }
+        button { padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; background: #111827; color: #fff; cursor: pointer; }
+        button.ghost { background: transparent; color: inherit; }
+        button:disabled { opacity: .6; cursor: not-allowed; }
+        .badge { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; padding: 6px 10px; border-radius: 999px; border: 1px solid #d1d5db; }
+        .method { font-weight: 700; }
+        .GET { color: #10b981; }
+        .POST { color: #3b82f6; }
+        .PUT { color: #f59e0b; }
+        .DELETE { color: #ef4444; }
+        pre { margin: 0; white-space: pre-wrap; word-break: break-word; }
+        .code { padding: 14px; border-top: 1px solid #e5e7eb; background: #0b1020; color: #d1d5db; overflow: auto; }
+        .code .kv .k { color: #93c5fd; }
+        .code .kv .v.str { color: #86efac; }
+        .code .kv .v.num { color: #fca5a5; }
+        .code .kv .v.bool { color: #f9a8d4; }
+        .grid { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; }
+        @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+        .endpoint-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+        .muted { color: #9ca3af; font-size: 12px; }
+        .status { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; padding: 4px 10px; border-radius: 999px; border: 1px solid #d1d5db; }
+        .flex { display: flex; gap: 10px; align-items: center; }
+    </style>
+    <script>
+        const defaults = {
+            api: 'http://localhost:8080',
+            tempo: 'http://localhost:3200'
+        };
+
+        function $(sel) { return document.querySelector(sel); }
+
+        function safeJsonParse(text) {
+            try { return JSON.parse(text); } catch { return text; }
+        }
+
+        function syntaxHighlight(data) {
+            const json = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+            return json
+                .replace(/\"([^\"]+)\"(?=\s*:)/g, '<span class="kv"><span class="k">"$1"</span></span>')
+                .replace(/: (\".*?\")/g, ': <span class="v str">$1</span>')
+                .replace(/: (\b\d+(?:\.\d+)?\b)/g, ': <span class="v num">$1</span>')
+                .replace(/: (\btrue\b|\bfalse\b|null)/g, ': <span class="v bool">$1</span>');
+        }
+
+        function setPreset({ method, path, body, target }) {
+            $('#method').value = method;
+            $('#path').value = path;
+            $('#body').value = body ? JSON.stringify(body, null, 2) : '';
+            if (target) { $('#target').value = target; }
+        }
+
+        async function sendRequest() {
+            const target = $('#target').value;
+            const baseApi = $('#baseApi').value.trim() || defaults.api;
+            const baseTempo = $('#baseTempo').value.trim() || defaults.tempo;
+            const method = $('#method').value;
+            const path = $('#path').value.trim();
+            const isAbsolute = /^https?:\/\//i.test(path);
+            let base = baseApi;
+            if (target === 'tempo') base = baseTempo;
+            if (target === 'tempoProxy') base = '';
+            const url = isAbsolute ? path : (base.replace(/\/$/, '') + path);
+            const headers = { 'Accept': 'application/json' };
+            if ($('#tryHeader').checked) headers['X-Ouroboros-Try'] = 'on';
+            let body = $('#body').value.trim();
+            let fetchOpts = { method, headers };
+            if (["POST", "PUT", "PATCH"].includes(method)) {
+                if (body) {
+                    try { JSON.parse(body); } catch { alert('Body가 유효한 JSON이 아닙니다.'); return; }
+                    headers['Content-Type'] = 'application/json';
+                    fetchOpts.body = body;
+                } else {
+                    headers['Content-Type'] = 'application/json';
+                    fetchOpts.body = '{}';
+                }
+            }
+
+            const t0 = performance.now();
+            setLoading(true);
+            clearOutput();
+            setMeta({ url, method });
+            try {
+                const res = await fetch(url, fetchOpts);
+                const text = await res.text();
+                const data = safeJsonParse(text);
+                const t1 = performance.now();
+                setStatus(res.status, res.statusText, (t1 - t0));
+                setHeaders([...res.headers.entries()]);
+                setBody(data);
+            } catch (e) {
+                setStatus(0, 'NETWORK ERROR', 0);
+                setBody({ error: String(e), hint: '교차 출처(CORS) 차단 가능성: Tempo(3200) 호출 시 서버 CORS 설정이 필요할 수 있습니다.' });
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        function setLoading(isLoading) {
+            $('#send').disabled = isLoading;
+            $('#send').textContent = isLoading ? '요청 중…' : '요청 보내기';
+        }
+        function clearOutput() {
+            $('#respHeaders').innerHTML = '';
+            $('#respBody').innerHTML = '';
+            $('#respStatus').textContent = '';
+        }
+        function setMeta({ url, method }) {
+            const safeUrl = url.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+            $('#reqMeta').innerHTML = `<span class="badge"><span class="method ${method}">${method}</span> <a href="${safeUrl}" target="_blank" rel="noreferrer noopener">${safeUrl}</a></span>`;
+        }
+        function setStatus(code, text, ms) {
+            const color = code >= 200 && code < 300 ? '#10b981' : (code === 0 ? '#ef4444' : '#f59e0b');
+            $('#respStatus').innerHTML = `<span class="status" style="border-color:${color}; color:${color}">HTTP ${code} ${text} · ${ms.toFixed(0)}ms</span>`;
+        }
+        function setHeaders(entries) {
+            const html = entries.map(([k, v]) => `<div><span class="muted">${k}</span>: <span>${v}</span></div>`).join('');
+            $('#respHeaders').innerHTML = html;
+        }
+        function setBody(data) {
+            if (typeof data === 'string') {
+                try { data = JSON.parse(data); } catch {}
+            }
+            const isJson = typeof data === 'object';
+            const display = isJson ? JSON.stringify(data, null, 2) : String(data);
+            $('#respBody').innerHTML = `<pre>${syntaxHighlight(display)}</pre>`;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // 기본 프리셋: GET /api/hello
+            $('#baseApi').value = defaults.api;
+            $('#baseTempo').value = defaults.tempo;
+            setPreset({ method: 'GET', path: '/api/hello', target: 'api' });
+
+            // 프리셋 버튼 이벤트
+            document.querySelectorAll('[data-preset]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const preset = JSON.parse(btn.dataset.preset);
+                    setPreset(preset);
+                });
+            });
+
+            // 전송 버튼
+            $('#send').addEventListener('click', sendRequest);
+        });
+    </script>
+    <!--
+      사용법 요약:
+      - Base URL은 비워두면 동일 오리진으로 요청합니다.
+      - Path에 엔드포인트를 입력하고, 필요 시 Body에 JSON을 넣어 전송하세요.
+      - 하단 프리셋 버튼으로 자주 쓰는 엔드포인트를 빠르게 채울 수 있습니다.
+    -->
+    </head>
+<body>
+    <header>
+        <h1>OuroTest API Try-It</h1>
+    </header>
+    <main>
+        <section class="panel">
+            <div class="title">요청 설정</div>
+            <div class="content">
+                <div class="row cols">
+                    <label for="target">Target</label>
+                    <select id="target">
+                        <option value="api">API (localhost:8080)</option>
+                        <option value="tempoProxy">Tempo via Proxy (/proxy/tempo)</option>
+                        <option value="tempo">Tempo (localhost:3200)</option>
+                    </select>
+                </div>
+                <div class="row cols">
+                    <label for="baseApi">API Base</label>
+                    <input id="baseApi" placeholder="http://localhost:8080" />
+                </div>
+                <div class="row cols">
+                    <label for="baseTempo">Tempo Base</label>
+                    <input id="baseTempo" placeholder="http://localhost:3200" />
+                </div>
+                <div class="row cols">
+                    <label for="method">Method</label>
+                    <select id="method">
+                        <option>GET</option>
+                        <option>POST</option>
+                        <option>PUT</option>
+                        <option>PATCH</option>
+                        <option>DELETE</option>
+                        <option>HEAD</option>
+                        <option>OPTIONS</option>
+                    </select>
+                </div>
+                <div class="row cols">
+                    <label for="path">Path</label>
+                    <input id="path" placeholder="예: /api/hello" />
+                </div>
+                <div class="row cols">
+                    <label for="tryHeader">X-Ouroboros-Try</label>
+                    <div class="flex">
+                        <input id="tryHeader" type="checkbox" />
+                        <span class="muted">체크 시 요청 헤더에 <b>X-Ouroboros-Try: on</b> 추가</span>
+                    </div>
+                </div>
+                <div class="row">
+                    <label for="body">Request Body (JSON)</label>
+                    <textarea id="body" spellcheck="false" placeholder='{"name":"Alice"}'></textarea>
+                </div>
+                <div class="controls">
+                    <button id="send">요청 보내기</button>
+                    <div id="reqMeta" class="muted"></div>
+                </div>
+                <div class="endpoint-buttons">
+                    <button class="ghost" data-preset='{"method":"GET","path":"/api/hello","target":"api"}'>GET /api/hello</button>
+                    <button class="ghost" data-preset='{"method":"GET","path":"/api/test","target":"api"}'>GET /api/test</button>
+                    <button class="ghost" data-preset='{"method":"GET","path":"/api/test/123","target":"api"}'>GET /api/test/{id}</button>
+                    <button class="ghost" data-preset='{"method":"GET","path":"/api/users","target":"api"}'>GET /api/users</button>
+                    <button class="ghost" data-preset='{"method":"GET","path":"/api/users/1","target":"api"}'>GET /api/users/{id}</button>
+                    <button class="ghost" data-preset='{"method":"POST","path":"/api/users","body":{"name":"새 유저","email":"new@example.com"},"target":"api"}'>POST /api/users</button>
+                    <button class="ghost" data-preset='{"method":"PUT","path":"/api/users/1","body":{"name":"수정됨","email":"edit@example.com"},"target":"api"}'>PUT /api/users/{id}</button>
+                    <button class="ghost" data-preset='{"method":"DELETE","path":"/api/users/1","target":"api"}'>DELETE /api/users/{id}</button>
+                    <button class="ghost" data-preset='{"method":"GET","path":"/api/users/count","target":"api"}'>GET /api/users/count</button>
+                </div>
+                <div class="endpoint-buttons" style="margin-top:8px;">
+                    <button class="ghost" data-preset='{"method":"GET","path":"/proxy/tempo/api/search","target":"tempoProxy"}'>Tempo GET /api/search (via proxy)</button>
+                    <button class="ghost" data-preset='{"method":"GET","path":"/proxy/tempo/api/traces/TRACE_ID_HERE","target":"tempoProxy"}'>Tempo GET /api/traces/{traceId} (via proxy)</button>
+                </div>
+                <div class="endpoint-buttons" style="margin-top:8px;">
+                    <button class="ghost" data-preset='{"method":"GET","path":"/ouroboros/tries/TRY_ID_HERE","target":"api"}'>GET /ouroboros/tries/{tryId}</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="title">응답</div>
+            <div class="content">
+                <div class="flex">
+                    <div id="respStatus"></div>
+                </div>
+                <div class="grid">
+                    <div>
+                        <div class="muted" style="margin-bottom:6px;">Headers</div>
+                        <div id="respHeaders"></div>
+                    </div>
+                    <div>
+                        <div class="muted" style="margin-bottom:6px;">Body</div>
+                        <div id="respBody" class="code"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
+
+
