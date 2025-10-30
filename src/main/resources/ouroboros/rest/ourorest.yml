@@ -1,97 +1,369 @@
-openapi: 3.1.0
-info:
-  title: API Documentation
-  version: 1.0.0
+wrongField: 3.1.0
+title: Test API
 paths:
+  /api/test:
+    GETS:
+      summary: Wrong method
+    get:
+      summary: Correct method
+      responses:
+        '200':
+          description: OK
+      x-ouroboros-id: 46632abe-09c9-43fd-850b-59284a10436d
+      x-ouroboros-progress: mock
+      x-ouroboros-tag: none
+      x-ouroboros-diff: none
   /api/users:
+    acc: null
     post:
-      summary: Create a new user
-      description: Simple ref test
-      deprecated: false
+      summary: Create user
+      responses:
+        '201':
+          description: Created
+      x-ouroboros-id: b13d8276-153c-40f9-8f51-7959d264e899
+      x-ouroboros-progress: mock
+      x-ouroboros-tag: none
+      x-ouroboros-diff: none
+  /api/test-import:
+    get:
+      summary: Get test data (duplicate - should be renamed)
+      description: This endpoint will be renamed to /api/test-import
       tags:
-      - Users
+      - Test
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestResponse'
+      x-ouroboros-id: 524a3dac-9b70-47dc-b62b-854d5c1d6ba7
+      x-ouroboros-progress: mock
+      x-ouroboros-tag: none
+      x-ouroboros-diff: none
+  /api/products:
+    get:
+      summary: Get all products (new endpoint)
+      description: This is a new endpoint that doesn't exist
+      tags:
+      - Products
+      parameters:
+      - name: limit
+        in: query
+        description: Maximum number of products to return
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+      x-ouroboros-id: 0d03b68c-e1a6-4474-9c21-023db1872b77
+      x-ouroboros-progress: mock
+      x-ouroboros-tag: none
+      x-ouroboros-diff: none
+    post:
+      summary: Create a new product
+      description: Add a new product to the catalog
+      tags:
+      - Products
       requestBody:
-        description: User object
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: '#/components/schemas/Product'
       responses:
         '201':
-          description: User created
+          description: Product created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-      x-ouroboros-id: a886a792-b09c-40f2-b4ae-62f74c3c2009
+                $ref: '#/components/schemas/Product'
+      x-ouroboros-id: 67072666-627d-4d8d-b74c-03f9094d3123
       x-ouroboros-progress: mock
       x-ouroboros-tag: none
-      x-ouroboros-isvalid: true
+      x-ouroboros-diff: none
+  /api/orders:
+    get:
+      summary: Get all orders
+      tags:
+      - Orders
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+      x-ouroboros-id: 6257bb87-be02-4d9c-aea2-87324538b8f5
+      x-ouroboros-progress: mock
+      x-ouroboros-tag: none
+      x-ouroboros-diff: none
+  /api/items:
+    get:
+      summary: Get items with duplicate schema
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product-import'
+      x-ouroboros-id: 721d1c99-f721-4902-8b2a-819592376216
+      x-ouroboros-progress: mock
+      x-ouroboros-tag: none
+      x-ouroboros-diff: none
+  /api/test-import1:
+    get:
+      summary: Get test data (duplicate - should be renamed)
+      description: This endpoint will be renamed to /api/test-import
+      tags:
+      - Test
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestResponse-import'
+      x-ouroboros-id: 9044818c-5420-40f4-b86e-24f972ef1a01
+      x-ouroboros-progress: mock
+      x-ouroboros-tag: none
+      x-ouroboros-diff: none
+  /api/products-import:
+    get:
+      summary: Get all products (new endpoint)
+      description: This is a new endpoint that doesn't exist
+      tags:
+      - Products
+      parameters:
+      - name: limit
+        in: query
+        description: Maximum number of products to return
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product-import1'
+      x-ouroboros-id: ba18c1f5-c8a1-4500-bbe8-7c308f105d85
+      x-ouroboros-progress: mock
+      x-ouroboros-tag: none
+      x-ouroboros-diff: none
+    post:
+      summary: Create a new product
+      description: Add a new product to the catalog
+      tags:
+      - Products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product-import1'
+      responses:
+        '201':
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product-import1'
+      x-ouroboros-id: 374376fe-9fec-441d-a41f-6783d5eefc60
+      x-ouroboros-progress: mock
+      x-ouroboros-tag: none
+      x-ouroboros-diff: none
+  /api/orders-import:
+    get:
+      summary: Get all orders
+      tags:
+      - Orders
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order-import'
+      x-ouroboros-id: de994c7c-ca19-4978-8a34-29648189d37a
+      x-ouroboros-progress: mock
+      x-ouroboros-tag: none
+      x-ouroboros-diff: none
 components:
   schemas:
-    Address:
+    TestResponse:
       type: object
-      title: Address Schema
-      description: A physical address
       properties:
-        street:
+        message:
           type: string
-          description: Street address
-          x-ouroboros-mock: '{{$address.streetAddress}}'
-        city:
+          description: Test message
+          x-ouroboros-mock: ''
+        timestamp:
           type: string
-          description: City name
-          x-ouroboros-mock: '{{$address.city}}'
-        zipCode:
-          type: string
-          description: Postal code
-          x-ouroboros-mock: '{{$address.zipCode}}'
+          format: date-time
+          x-ouroboros-mock: ''
       required:
-      - street
-      - city
-    User:
+      - message
+      x-ouroboros-orders:
+      - message
+      - timestamp
+    Product:
       type: object
-      title: User Schema
-      description: A user entity
       properties:
         id:
           type: string
-          description: User ID
-          x-ouroboros-mock: '{{$random.uuid}}'
+          description: Product ID
+          x-ouroboros-mock: ''
         name:
           type: string
-          description: User name
-          x-ouroboros-mock: '{{$name.fullName}}'
-        email:
+          description: Product name
+          x-ouroboros-mock: ''
+        price:
+          type: number
+          format: double
+          description: Product price
+          x-ouroboros-mock: ''
+        category:
           type: string
-          description: User email
-          x-ouroboros-mock: '{{$internet.email}}'
+          description: Product category
+          x-ouroboros-mock: ''
       required:
       - id
       - name
-    UserWithAddress:
+      - price
+      x-ouroboros-orders:
+      - id
+      - name
+      - price
+      - category
+    Order:
       type: object
-      title: User with Address
-      description: User with nested address reference
+      properties:
+        orderId:
+          type: string
+          description: Order ID
+          x-ouroboros-mock: ''
+        productId:
+          type: string
+          description: Referenced product ID
+          x-ouroboros-mock: ''
+        quantity:
+          type: integer
+          description: Order quantity
+          x-ouroboros-mock: ''
+        totalPrice:
+          type: number
+          format: double
+          x-ouroboros-mock: ''
+      required:
+      - orderId
+      - productId
+      - quantity
+      x-ouroboros-orders:
+      - orderId
+      - productId
+      - quantity
+      - totalPrice
+    Product-import:
+      type: object
+      description: This schema name already exists in ourorest.yml
+      properties:
+        itemId:
+          type: string
+          x-ouroboros-mock: ''
+        itemName:
+          type: string
+          x-ouroboros-mock: ''
+      x-ouroboros-orders:
+      - itemId
+      - itemName
+    TestResponse-import:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Test message
+          x-ouroboros-mock: ''
+        timestamp:
+          type: string
+          format: date-time
+          x-ouroboros-mock: ''
+      required:
+      - message
+      x-ouroboros-orders:
+      - message
+      - timestamp
+    Product-import1:
+      type: object
       properties:
         id:
           type: string
-          description: User ID
-          x-ouroboros-mock: '{{$random.uuid}}'
+          description: Product ID
+          x-ouroboros-mock: ''
         name:
           type: string
-          description: User name
-          x-ouroboros-mock: '{{$name.fullName}}'
-        address:
-          $ref: '#/components/schemas/Address'
-        previousAddresses:
-          type: array
-          description: Previous addresses
-          items:
-            $ref: '#/components/schemas/Address'
-          minItems: 0
-          maxItems: 5
+          description: Product name
+          x-ouroboros-mock: ''
+        price:
+          type: number
+          format: double
+          description: Product price
+          x-ouroboros-mock: ''
+        category:
+          type: string
+          description: Product category
+          x-ouroboros-mock: ''
       required:
       - id
       - name
+      - price
+      x-ouroboros-orders:
+      - id
+      - name
+      - price
+      - category
+    Order-import:
+      type: object
+      properties:
+        orderId:
+          type: string
+          description: Order ID
+          x-ouroboros-mock: ''
+        productId:
+          type: string
+          description: Referenced product ID
+          x-ouroboros-mock: ''
+        quantity:
+          type: integer
+          description: Order quantity
+          x-ouroboros-mock: ''
+        totalPrice:
+          type: number
+          format: double
+          x-ouroboros-mock: ''
+      required:
+      - orderId
+      - productId
+      - quantity
+      x-ouroboros-orders:
+      - orderId
+      - productId
+      - quantity
+      - totalPrice
+security: [
+  ]
