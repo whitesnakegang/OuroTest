@@ -1,29 +1,6 @@
 wrongField: 3.1.0
 title: Test API
 paths:
-  /api/test:
-    GETS:
-      summary: Wrong method
-    get:
-      summary: Correct method
-      responses:
-        '200':
-          description: OK
-      x-ouroboros-id: 46632abe-09c9-43fd-850b-59284a10436d
-      x-ouroboros-progress: mock
-      x-ouroboros-tag: none
-      x-ouroboros-diff: none
-  /api/users:
-    acc: null
-    post:
-      summary: Create user
-      responses:
-        '201':
-          description: Created
-      x-ouroboros-id: b13d8276-153c-40f9-8f51-7959d264e899
-      x-ouroboros-progress: mock
-      x-ouroboros-tag: none
-      x-ouroboros-diff: none
   /api/test-import:
     get:
       summary: Get test data (duplicate - should be renamed)
