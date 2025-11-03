@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 public class RestController {
 
     @GetMapping("/hello")
-    @ApiState(state = State.COMPLETED , owner = "sin", description = "park")
+    @ApiState(state = State.COMPLETED)
     public String hello() {
         return "hello";
     }

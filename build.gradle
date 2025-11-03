@@ -21,7 +21,7 @@ repositories {
 
 dependencies {
 
-    implementation 'kr.co:ouroboros:0.0.1-SNAPSHOT'
+    implementation 'io.github.whitesnakegang:ouroboros:0.1.0-SNAPSHOT'
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
