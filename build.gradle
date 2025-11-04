@@ -21,10 +21,12 @@ repositories {
 
 dependencies {
 
-    implementation 'kr.co:ouroboros:0.0.1-SNAPSHOT'
+    implementation 'io.github.whitesnakegang:ouroboros:0.1.0-SNAPSHOT'
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 

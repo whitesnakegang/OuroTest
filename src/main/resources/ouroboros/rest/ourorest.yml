@@ -1,38 +1,310 @@
 openapi: 3.1.0
 info:
-  title: API Documentation
+  title: Ouroboros Mock Test Suite
   version: 1.0.0
 paths:
-  /api/users:
-    post:
-      summary: Create a new user
-      description: Simple ref test
+  /api/hello:
+    get:
+      summary: Hello endpoint
       deprecated: false
+      description: Real controller implementation
       tags:
-      - Users
+      - Real
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: string
+      x-ouroboros-id: real-hello-001
+      x-ouroboros-progress: completed
+      x-ouroboros-tag: real
+      x-ouroboros-diff: none
+  /api/users:
+    get:
+      summary: Get users
+      deprecated: false
+      description: Real controller implementation
+      tags:
+      - Real
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: string
+      x-ouroboros-id: real-users-001
+      x-ouroboros-progress: completed
+      x-ouroboros-tag: real
+      x-ouroboros-diff: none
+  /api/test/body/required:
+    post:
+      summary: Required body test
+      deprecated: false
+      description: Test request body required validation (should return 400 if body
+        missing)
+      tags:
+      - BodyValidation
       requestBody:
-        description: User object
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  x-ouroboros-mock: ''
+              required:
+              - message
+              x-ouroboros-orders:
+              - message
+      responses:
+        '200':
+          description: Body validated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    x-ouroboros-mock: ''
+                  echo:
+                    type: string
+                    x-ouroboros-mock: '{{$lorem.sentence}}'
+                  timestamp:
+                    type: string
+                    x-ouroboros-mock: '{{$date.birthday}}'
+                x-ouroboros-orders:
+                - message
+                - echo
+                - timestamp
+      x-ouroboros-id: test-body-001
+      x-ouroboros-progress: mock
+      x-ouroboros-tag: test
+      x-ouroboros-diff: none
+  /api/test/body/type:
+    post:
+      summary: Field type validation
+      deprecated: false
+      description: Test field type validation (name must be string, age must be integer)
+      tags:
+      - BodyValidation
+      requestBody:
         required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
       responses:
-        '201':
-          description: User created
+        '200':
+          description: Types validated
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
-      x-ouroboros-id: a886a792-b09c-40f2-b4ae-62f74c3c2009
+      x-ouroboros-id: test-body-002
       x-ouroboros-progress: mock
-      x-ouroboros-tag: none
-      x-ouroboros-isvalid: true
+      x-ouroboros-tag: test
+      x-ouroboros-diff: none
+  /api/test/body/required-fields:
+    post:
+      summary: Required fields validation
+      deprecated: false
+      description: Test required fields (id and name are required)
+      tags:
+      - BodyValidation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: Required fields validated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+      x-ouroboros-id: test-body-003
+      x-ouroboros-progress: mock
+      x-ouroboros-tag: test
+      x-ouroboros-diff: none
+  /api/test/body/nested:
+    post:
+      summary: Nested object validation
+      deprecated: false
+      description: Test nested object field validation (address.city must be string)
+      tags:
+      - BodyValidation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserWithAddress'
+      responses:
+        '200':
+          description: Nested fields validated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserWithAddress'
+      x-ouroboros-id: test-body-004
+      x-ouroboros-progress: mock
+      x-ouroboros-tag: test
+      x-ouroboros-diff: none
+  /api/test/body/array:
+    post:
+      summary: Array validation
+      deprecated: false
+      description: Test array item validation (previousAddresses items must be Address
+        type)
+      tags:
+      - BodyValidation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserWithAddress'
+      responses:
+        '200':
+          description: Array validated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserWithAddress'
+      x-ouroboros-id: test-body-005
+      x-ouroboros-progress: mock
+      x-ouroboros-tag: test
+      x-ouroboros-diff: none
+  /api/test/ref-nested:
+    post:
+      summary: Nested $ref test (Deep Merge Test)
+      deprecated: false
+      description: Test nested schema references with deep merge
+      tags:
+      - Reference
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserWithAddress'
+      responses:
+        '200':
+          description: User with address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserWithAddress'
+      x-ouroboros-id: test-ref-002
+      x-ouroboros-progress: mock
+      x-ouroboros-tag: test
+      x-ouroboros-diff: none
+  /api/test/body/root-array:
+    post:
+      summary: Root array validation
+      deprecated: false
+      description: Test when request body root is array type
+      tags:
+      - BodyValidation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: Array validated
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+      x-ouroboros-id: test-body-006
+      x-ouroboros-progress: mock
+      x-ouroboros-tag: test
+      x-ouroboros-diff: none
+  /api/test/body/root-string:
+    post:
+      summary: Root string validation
+      deprecated: false
+      description: Test when request body root is string type
+      tags:
+      - BodyValidation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+      responses:
+        '200':
+          description: String validated
+          content:
+            application/json:
+              schema:
+                type: string
+      x-ouroboros-id: test-body-007
+      x-ouroboros-progress: mock
+      x-ouroboros-tag: test
+      x-ouroboros-diff: none
+  /api/test/body/delete-with-body:
+    delete:
+      summary: DELETE with body test
+      deprecated: false
+      description: Test DELETE method with request body
+      tags:
+      - BodyValidation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+                  x-ouroboros-mock: '{{$lorem.sentence}}'
+                ids:
+                  type: array
+                  items:
+                    type: string
+                  x-ouroboros-mock: ''
+              required:
+              - reason
+      responses:
+        '200':
+          description: Delete successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    x-ouroboros-mock: Deletion completed
+                  deletedCount:
+                    type: integer
+                    x-ouroboros-mock: '{{$number.int(min=1,max=10)}}'
+      x-ouroboros-id: test-body-008
+      x-ouroboros-progress: mock
+      x-ouroboros-tag: test
+      x-ouroboros-diff: none
 components:
   schemas:
     Address:
       type: object
-      title: Address Schema
       description: A physical address
       properties:
         street:
@@ -47,18 +319,26 @@ components:
           type: string
           description: Postal code
           x-ouroboros-mock: '{{$address.zipCode}}'
+        country:
+          type: string
+          description: Country name
+          x-ouroboros-mock: '{{$address.country}}'
       required:
       - street
       - city
+      x-ouroboros-orders:
+      - street
+      - city
+      - zipCode
+      - country
     User:
       type: object
-      title: User Schema
       description: A user entity
       properties:
         id:
           type: string
           description: User ID
-          x-ouroboros-mock: '{{$random.uuid}}'
+          x-ouroboros-mock: '{{$internet.uuid}}'
         name:
           type: string
           description: User name
@@ -66,23 +346,40 @@ components:
         email:
           type: string
           description: User email
-          x-ouroboros-mock: '{{$internet.email}}'
+          x-ouroboros-mock: '{{$internet.emailAddress}}'
+        age:
+          type: integer
+          description: User age
+          x-ouroboros-mock: '{{$number.int(min=18,max=65)}}'
+        isActive:
+          type: boolean
+          description: Active status
+          x-ouroboros-mock: 'true'
       required:
       - id
       - name
+      x-ouroboros-orders:
+      - id
+      - name
+      - email
+      - age
+      - isActive
     UserWithAddress:
       type: object
-      title: User with Address
       description: User with nested address reference
       properties:
         id:
           type: string
           description: User ID
-          x-ouroboros-mock: '{{$random.uuid}}'
+          x-ouroboros-mock: '{{$internet.uuid}}'
         name:
           type: string
           description: User name
           x-ouroboros-mock: '{{$name.fullName}}'
+        email:
+          type: string
+          description: User email
+          x-ouroboros-mock: '{{$internet.emailAddress}}'
         address:
           $ref: '#/components/schemas/Address'
         previousAddresses:
@@ -90,8 +387,17 @@ components:
           description: Previous addresses
           items:
             $ref: '#/components/schemas/Address'
-          minItems: 0
-          maxItems: 5
+          minItems: 1
+          maxItems: 3
+          x-ouroboros-mock: ''
       required:
       - id
       - name
+      x-ouroboros-orders:
+      - id
+      - name
+      - email
+      - address
+      - previousAddresses
+protocol: rest
+version: 1.0.0
