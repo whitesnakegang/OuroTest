@@ -118,9 +118,9 @@ paths:
         '400':
           description: Bad request
       x-ouroboros-id: 8a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p
-      x-ouroboros-progress: mock
+      x-ouroboros-progress: completed
       x-ouroboros-tag: none
-      x-ouroboros-diff: request
+      x-ouroboros-diff: none
   /api/items:
     get:
       summary: Get items with duplicate schema
@@ -235,7 +235,7 @@ paths:
             '*/*':
               schema:
                 type: string
-      x-ouroboros-id: 5f280e60-8be9-4a18-aa5e-2f6d51b237ee
+      x-ouroboros-id: 74498d19-2f16-4dd6-9631-cec32dbd1215
       x-ouroboros-progress: COMPLETED
       x-ouroboros-tag: none
       x-ouroboros-diff: endpoint

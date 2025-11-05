@@ -29,6 +29,11 @@ public class RestController {
     @GetMapping("/orders")
     @ApiState(state = State.COMPLETED)
     public List<Order> getOrders() {
+        try {
+            orderService.test1();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return orderService.getAllOrders();
     }
 
