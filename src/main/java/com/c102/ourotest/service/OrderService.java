@@ -8,19 +8,19 @@ import com.c102.ourotest.repository.ProductRepository;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.context.annotation.Lazy;
 
 @Service
 public class OrderService {
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
-    private final ObjectProvider<OrderService> orderServiceProvider;  // 자기 자신의 proxy 객체 제공
+    private final OrderService self;  // @Lazy를 통해 자기 자신의 프록시를 주입받음
 
-    public OrderService(OrderRepository orderRepository, ProductRepository productRepository, ObjectProvider<OrderService> orderServiceProvider) {
+    public OrderService(OrderRepository orderRepository, ProductRepository productRepository, @Lazy OrderService self) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
-        this.orderServiceProvider = orderServiceProvider;
+        this.self = self;  // Spring이 자동으로 프록시를 만들어서 주입해줌
     }
 
     public List<Order> getAllOrders() {
@@ -31,7 +31,7 @@ public class OrderService {
             Double discountRate) {
 
         try {
-            test1();
+            self.test1();
             test2();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -66,8 +66,8 @@ public class OrderService {
 
     public void test1() throws Exception {
         Thread.sleep(1000);
-        final OrderService orderService = orderServiceProvider.getObject();
-        orderService.test3();
+        // @Lazy를 통해 주입받은 프록시를 통해 호출하여 AOP가 적용되도록 함
+        self.test3();
     }
 
     public void test2() throws Exception {
