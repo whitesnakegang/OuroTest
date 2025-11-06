@@ -74,7 +74,7 @@ public class OrderService {
         Thread.sleep(2000);
     }
 
-    private void test3() throws Exception {
+    public void test3() throws Exception {
         Thread.sleep(3000);
     }
 }
