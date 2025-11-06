@@ -8,16 +8,19 @@ import com.c102.ourotest.repository.ProductRepository;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.ObjectProvider;
 
 @Service
 public class OrderService {
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final ObjectProvider<OrderService> orderServiceProvider;  // 자기 자신의 proxy 객체 제공
 
-    public OrderService(OrderRepository orderRepository, ProductRepository productRepository) {
+    public OrderService(OrderRepository orderRepository, ProductRepository productRepository, ObjectProvider<OrderService> orderServiceProvider) {
         this.orderRepository = orderRepository;
         this.productRepository = productRepository;
+        this.orderServiceProvider = orderServiceProvider;
     }
 
     public List<Order> getAllOrders() {
@@ -63,7 +66,8 @@ public class OrderService {
 
     public void test1() throws Exception {
         Thread.sleep(1000);
-        test3();
+        final OrderService orderService = orderServiceProvider.getObject();
+        orderService.test3();
     }
 
     public void test2() throws Exception {
