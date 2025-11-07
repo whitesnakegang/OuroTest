@@ -14,7 +14,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/TestResponse'
       x-ouroboros-id: 524a3dac-9b70-47dc-b62b-854d5c1d6ba7
-      x-ouroboros-progress: none
+      x-ouroboros-progress: mock
       x-ouroboros-tag: none
       x-ouroboros-diff: none
   /api/products:
@@ -41,7 +41,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/Product'
       x-ouroboros-id: 0d03b68c-e1a6-4474-9c21-023db1872b77
-      x-ouroboros-progress: none
+      x-ouroboros-progress: mock
       x-ouroboros-tag: none
       x-ouroboros-diff: none
     post:
@@ -64,7 +64,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Product'
       x-ouroboros-id: 67072666-627d-4d8d-b74c-03f9094d3123
-      x-ouroboros-progress: none
+      x-ouroboros-progress: mock
       x-ouroboros-tag: none
       x-ouroboros-diff: none
   /api/orders:
@@ -133,7 +133,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Product-import'
       x-ouroboros-id: 721d1c99-f721-4902-8b2a-819592376216
-      x-ouroboros-progress: none
+      x-ouroboros-progress: mock
       x-ouroboros-tag: none
       x-ouroboros-diff: none
   /api/test-import1:
@@ -151,7 +151,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/TestResponse-import'
       x-ouroboros-id: 9044818c-5420-40f4-b86e-24f972ef1a01
-      x-ouroboros-progress: none
+      x-ouroboros-progress: mock
       x-ouroboros-tag: none
       x-ouroboros-diff: none
   /api/products-import:
@@ -178,7 +178,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/Product-import1'
       x-ouroboros-id: ba18c1f5-c8a1-4500-bbe8-7c308f105d85
-      x-ouroboros-progress: none
+      x-ouroboros-progress: mock
       x-ouroboros-tag: none
       x-ouroboros-diff: none
     post:
@@ -201,7 +201,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Product-import1'
       x-ouroboros-id: 374376fe-9fec-441d-a41f-6783d5eefc60
-      x-ouroboros-progress: none
+      x-ouroboros-progress: mock
       x-ouroboros-tag: none
       x-ouroboros-diff: none
   /api/orders-import:
@@ -220,7 +220,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/Order-import'
       x-ouroboros-id: de994c7c-ca19-4978-8a34-29648189d37a
-      x-ouroboros-progress: none
+      x-ouroboros-progress: mock
       x-ouroboros-tag: none
       x-ouroboros-diff: none
   /api/hello:
@@ -235,7 +235,7 @@ paths:
             '*/*':
               schema:
                 type: string
-      x-ouroboros-id: 74498d19-2f16-4dd6-9631-cec32dbd1215
+      x-ouroboros-id: 14b70773-f5a6-4035-b620-32047e3a1810
       x-ouroboros-progress: COMPLETED
       x-ouroboros-tag: none
       x-ouroboros-diff: endpoint
