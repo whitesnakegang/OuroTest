@@ -1,244 +1,106 @@
 paths:
-  /api/test-import:
+  /api/compare/members:
     get:
-      summary: Get test data (duplicate - should be renamed)
+      summary: 회원 조회
       deprecated: false
-      description: This endpoint will be renamed to /api/test-import
+      description: 회원 리스트 조회
       tags:
-      - Test
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TestResponse'
-      x-ouroboros-id: 524a3dac-9b70-47dc-b62b-854d5c1d6ba7
-      x-ouroboros-progress: mock
-      x-ouroboros-tag: none
-      x-ouroboros-diff: none
-  /api/products:
-    get:
-      summary: Get all products (new endpoint)
-      deprecated: false
-      description: This is a new endpoint that doesn't exist
-      tags:
-      - Products
+      - MEMBER
       parameters:
-      - name: limit
+      - name: page
         in: query
-        description: Maximum number of products to return
+        description: 'Query parameter: page'
+        required: false
+        schema:
+          type: integer
+      - name: size
+        in: query
+        description: 'Query parameter: size'
         required: false
         schema:
           type: integer
       responses:
         '200':
-          description: Success
+          description: 요청이 성공적으로 처리됨
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Product'
-      x-ouroboros-id: 0d03b68c-e1a6-4474-9c21-023db1872b77
-      x-ouroboros-progress: mock
+                  $ref: '#/components/schemas/MemberResponse'
+      x-ouroboros-id: 65aaf53e-c1be-407f-bbd2-4bbb77cf3162
+      x-ouroboros-progress: completed
       x-ouroboros-tag: none
       x-ouroboros-diff: none
     post:
-      summary: Create a new product
+      summary: 회원가입
       deprecated: false
-      description: Add a new product to the catalog
+      description: 사용자는 회원가입을 할 수 있다.
       tags:
-      - Products
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Product'
-      responses:
-        '201':
-          description: Product created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Product'
-      x-ouroboros-id: 67072666-627d-4d8d-b74c-03f9094d3123
-      x-ouroboros-progress: mock
-      x-ouroboros-tag: none
-      x-ouroboros-diff: none
-  /api/orders:
-    get:
-      summary: Get all orders
-      deprecated: false
-      description: ''
-      tags:
-      - Orders
+      - MEMBER
       parameters: [
         ]
-      responses: {
-        }
-      x-ouroboros-id: 6257bb87-be02-4d9c-aea2-87324538b8f5
-      x-ouroboros-progress: completed
-      x-ouroboros-tag: none
-      x-ouroboros-diff: none
-    post:
-      summary: Create order with product validation
-      deprecated: false
-      description: Create a new order with product validation and discount calculation
-      tags:
-      - Orders
-      parameters:
-      - name: applyDiscount
-        in: query
-        description: Whether to apply discount
-        required: false
-        schema:
-          type: boolean
-      - name: discountRate
-        in: query
-        description: Discount rate (0.0 to 1.0)
-        required: false
-        schema:
-          type: number
-          format: double
       requestBody:
+        description: Request body
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/OrderCreateRequest'
+              $ref: '#/components/schemas/CreateMemberDTO'
       responses:
         '201':
-          description: Order created successfully
+          description: 리소스가 성공적으로 생성됨
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Order'
-        '400':
-          description: Bad request
-      x-ouroboros-id: 8a1b2c3d-4e5f-6g7h-8i9j-0k1l2m3n4o5p
-      x-ouroboros-progress: completed
-      x-ouroboros-tag: none
-      x-ouroboros-diff: none
-  /api/items:
-    get:
-      summary: Get items with duplicate schema
-      deprecated: false
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Product-import'
-      x-ouroboros-id: 721d1c99-f721-4902-8b2a-819592376216
-      x-ouroboros-progress: mock
-      x-ouroboros-tag: none
-      x-ouroboros-diff: none
-  /api/test-import1:
-    get:
-      summary: Get test data (duplicate - should be renamed)
-      deprecated: false
-      description: This endpoint will be renamed to /api/test-import
-      tags:
-      - Test
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/TestResponse-import'
-      x-ouroboros-id: 9044818c-5420-40f4-b86e-24f972ef1a01
-      x-ouroboros-progress: mock
-      x-ouroboros-tag: none
-      x-ouroboros-diff: none
-  /api/products-import:
-    get:
-      summary: Get all products (new endpoint)
-      deprecated: false
-      description: This is a new endpoint that doesn't exist
-      tags:
-      - Products
-      parameters:
-      - name: limit
-        in: query
-        description: Maximum number of products to return
-        required: false
-        schema:
-          type: integer
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Product-import1'
-      x-ouroboros-id: ba18c1f5-c8a1-4500-bbe8-7c308f105d85
-      x-ouroboros-progress: mock
-      x-ouroboros-tag: none
-      x-ouroboros-diff: none
-    post:
-      summary: Create a new product
-      deprecated: false
-      description: Add a new product to the catalog
-      tags:
-      - Products
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Product-import1'
-      responses:
-        '201':
-          description: Product created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Product-import1'
-      x-ouroboros-id: 374376fe-9fec-441d-a41f-6783d5eefc60
-      x-ouroboros-progress: mock
-      x-ouroboros-tag: none
-      x-ouroboros-diff: none
-  /api/orders-import:
-    get:
-      summary: Get all orders
-      deprecated: false
-      tags:
-      - Orders
-      responses:
-        '200':
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Order-import'
-      x-ouroboros-id: de994c7c-ca19-4978-8a34-29648189d37a
-      x-ouroboros-progress: mock
-      x-ouroboros-tag: none
-      x-ouroboros-diff: none
-  /api/hello:
-    get:
-      deprecated: false
-      tags:
-      - rest-controller
-      responses:
+                type: string
         '200':
           description: OK
           content:
             '*/*':
               schema:
                 type: string
-      x-ouroboros-id: 14b70773-f5a6-4035-b620-32047e3a1810
-      x-ouroboros-progress: COMPLETED
+      x-ouroboros-id: 5ccfc6e3-344c-4cb4-83da-6a860714a489
+      x-ouroboros-progress: mock
       x-ouroboros-tag: none
-      x-ouroboros-diff: endpoint
+      x-ouroboros-diff: response
+  /api/compare/members/{memberId}:
+    get:
+      summary: 회원조회
+      deprecated: false
+      description: memberId로 회원을 조회할 수 있다.
+      tags:
+      - MEMBER
+      parameters: [
+        ]
+      responses:
+        '200':
+          description: 요청이 성공적으로 처리됨
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberResponse'
+      x-ouroboros-id: 91e44747-93c7-4ff1-bea2-8039c77ce7bd
+      x-ouroboros-progress: completed
+      x-ouroboros-tag: none
+      x-ouroboros-diff: none
+    delete:
+      summary: 회원 삭제
+      deprecated: false
+      description: 회원 id로 회원을 삭제한다
+      tags:
+      - MEMBER
+      responses:
+        '200':
+          description: 요청이 성공적으로 처리됨
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberResponse'
+      x-ouroboros-id: 847a795f-1033-4a93-9432-67aa0e9f62a4
+      x-ouroboros-progress: completed
+      x-ouroboros-tag: none
+      x-ouroboros-diff: none
 components:
   schemas:
     TestResponse:
@@ -400,22 +262,45 @@ components:
       - productId
       - quantity
       - totalPrice
-    OrderCreateRequest:
+    User:
       type: object
+      properties: {
+        }
+      x-ouroboros-orders: [
+        ]
+    CreateMemberDTO:
+      type: object
+      description: 회원가입을 위한 DTO
       properties:
-        productId:
+        email:
           type: string
-          description: Product ID to order
-          x-ouroboros-mock: ''
-        quantity:
-          type: integer
-          description: Order quantity
-          x-ouroboros-mock: ''
-      required:
-      - productId
-      - quantity
+          x-ouroboros-mock: '{{$internet.emailAddress}}'
+        password:
+          type: string
+          x-ouroboros-mock: '{{$internet.password}}'
       x-ouroboros-orders:
-      - productId
-      - quantity
+      - email
+      - password
+    MemberResponse:
+      type: object
+      description: 회원정보
+      properties:
+        email:
+          type: string
+          x-ouroboros-mock: '{{$internet.emailAddress}}'
+        name:
+          type: string
+          x-ouroboros-mock: '{{$name.fullName}}'
+        age:
+          type: integer
+          x-ouroboros-mock: '{{$number.randomNumber}}'
+        phone:
+          type: string
+          x-ouroboros-mock: '{{$phonenumber.cellPhone}}'
+      x-ouroboros-orders:
+      - email
+      - name
+      - age
+      - phone
 security: [
   ]
