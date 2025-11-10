@@ -38,8 +38,6 @@ paths:
       description: 사용자는 회원가입을 할 수 있다.
       tags:
       - MEMBER
-      parameters: [
-        ]
       requestBody:
         description: Request body
         required: true
@@ -54,16 +52,10 @@ paths:
             application/json:
               schema:
                 type: string
-        '200':
-          description: OK
-          content:
-            '*/*':
-              schema:
-                type: string
       x-ouroboros-id: 5ccfc6e3-344c-4cb4-83da-6a860714a489
-      x-ouroboros-progress: mock
+      x-ouroboros-progress: completed
       x-ouroboros-tag: none
-      x-ouroboros-diff: response
+      x-ouroboros-diff: none
   /api/compare/members/{memberId}:
     get:
       summary: 회원조회
@@ -101,22 +93,6 @@ paths:
       x-ouroboros-progress: completed
       x-ouroboros-tag: none
       x-ouroboros-diff: none
-  /api/hello:
-    get:
-      deprecated: false
-      tags:
-      - rest-controller
-      responses:
-        '200':
-          description: OK
-          content:
-            '*/*':
-              schema:
-                type: string
-      x-ouroboros-id: 92e3db46-74a8-4f00-9646-04f500c3ab83
-      x-ouroboros-progress: completed
-      x-ouroboros-tag: none
-      x-ouroboros-diff: endpoint
 components:
   schemas:
     TestResponse:
