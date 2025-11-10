@@ -270,9 +270,21 @@ components:
         password:
           type: string
           x-ouroboros-mock: '{{$internet.password}}'
+        name:
+          type: string
+          x-ouroboros-mock: '{{$name.fullName}}'
+        age:
+          type: integer
+          x-ouroboros-mock: '{{$number.randomNumber}}'
+        phone:
+          type: string
+          x-ouroboros-mock: '{{$phonenumber.phoneNumber}}'
       x-ouroboros-orders:
       - email
       - password
+      - name
+      - age
+      - phone
     MemberResponse:
       type: object
       description: 회원정보

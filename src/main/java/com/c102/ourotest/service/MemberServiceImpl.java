@@ -25,6 +25,9 @@ public class MemberServiceImpl implements MemberService {
         Member member = Member.builder()
                 .email(createMemberDTO.getEmail())
                 .password(createMemberDTO.getPassword())
+                .name(createMemberDTO.getName())
+                .age(createMemberDTO.getAge())
+                .phone(createMemberDTO.getPhone())
                 .build();
         
         Member savedMember = memberRepository.save(member);
