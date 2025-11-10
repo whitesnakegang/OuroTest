@@ -101,6 +101,22 @@ paths:
       x-ouroboros-progress: completed
       x-ouroboros-tag: none
       x-ouroboros-diff: none
+  /api/hello:
+    get:
+      deprecated: false
+      tags:
+      - rest-controller
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+      x-ouroboros-id: 92e3db46-74a8-4f00-9646-04f500c3ab83
+      x-ouroboros-progress: completed
+      x-ouroboros-tag: none
+      x-ouroboros-diff: endpoint
 components:
   schemas:
     TestResponse:
