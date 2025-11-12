@@ -16,20 +16,30 @@
         }
         #log {
             width: 100%;
-            height: 240px;
+            height: 260px;
             border: 1px solid #ccc;
-            padding: 8px;
+            padding: 12px;
             overflow-y: auto;
             background: #f9f9f9;
+            font-family: "Fira Code", monospace;
+            font-size: 13px;
+            line-height: 1.45;
+            white-space: pre-wrap;
         }
         label {
             display: inline-block;
             width: 120px;
         }
+        .log-divider {
+            margin: 4px 0;
+            border-bottom: 1px dashed #ccc;
+        }
     </style>
 </head>
 <body>
 <h1>STOMP Chat Test</h1>
+
+<!-- (상단의 설정 UI는 동일) -->
 
 <fieldset>
     <legend>연결 설정</legend>
@@ -78,6 +88,9 @@
 
 <fieldset>
     <legend>Log</legend>
+    <div>
+        <button id="clearLogBtn">Clear Log</button>
+    </div>
     <pre id="log"></pre>
 </fieldset>
 
@@ -93,10 +106,27 @@
     const disconnectBtn = document.getElementById('disconnectBtn');
     const sendBtn = document.getElementById('sendBtn');
     const sendRestBtn = document.getElementById('sendRestBtn');
+    const clearLogBtn = document.getElementById('clearLogBtn');
 
     let stompClient = null;
-    let subscription = null;
+    const subscriptions = [];
     let contentTouched = false;
+
+    function prettyJson(value) {
+        if (value == null) return 'null';
+        if (typeof value === 'string') {
+            try {
+                return JSON.stringify(JSON.parse(value), null, 2);
+            } catch {
+                return value;
+            }
+        }
+        try {
+            return JSON.stringify(value, null, 2);
+        } catch {
+            return String(value);
+        }
+    }
 
     function log(message) {
         const timestamp = new Date().toISOString();
@@ -104,39 +134,28 @@
         logArea.scrollTop = logArea.scrollHeight;
     }
 
-    function logHeaderAndPayload(prefix, headers, payload) {
-        log(`${prefix} headers: ${JSON.stringify(headers)}`);
-        log(`${prefix} payload: ${JSON.stringify(payload)}`);
+    function logBlock(title, headers, payload) {
+        log(`${title} headers:\n${prettyJson(headers)}`);
+        log(`${title} payload:\n${prettyJson(payload)}`);
+        logArea.innerHTML += '<div class="log-divider"></div>';
+    }
+
+    function clearLog() {
+        logArea.innerHTML = '';
     }
 
     function resolveStomp() {
         const lib = window.StompJs || window.Stomp;
-        if (!lib) {
-            return null;
-        }
+        if (!lib) return null;
 
-        if (lib.Stomp && typeof lib.Stomp.over === 'function') {
-            return lib.Stomp;
-        }
-
-        if (lib.Client && typeof lib.over === 'function') {
-            return lib;
-        }
-
+        if (lib.Stomp && typeof lib.Stomp.over === 'function') return lib.Stomp;
+        if (lib.Client && typeof lib.over === 'function') return lib;
         if (lib.default) {
             const maybeDefault = lib.default;
-            if (maybeDefault.Stomp && typeof maybeDefault.Stomp.over === 'function') {
-                return maybeDefault.Stomp;
-            }
-            if (typeof maybeDefault.over === 'function') {
-                return maybeDefault;
-            }
+            if (maybeDefault.Stomp && typeof maybeDefault.Stomp.over === 'function') return maybeDefault.Stomp;
+            if (typeof maybeDefault.over === 'function') return maybeDefault;
         }
-
-        if (typeof lib.over === 'function') {
-            return lib;
-        }
-
+        if (typeof lib.over === 'function') return lib;
         return null;
     }
 
@@ -148,41 +167,32 @@
         }
 
         const socket = new SockJS(endpointInput.value);
-        socket.onopen = (event) => {
-            log(`SockJS opened: ${JSON.stringify({type: event.type})}`);
-        };
-        socket.onclose = (event) => {
-            log(`SockJS closed: ${JSON.stringify({
-                code: event && typeof event.code === 'number' ? event.code : null,
-                reason: event && event.reason ? event.reason : '',
-                wasClean: event && typeof event.wasClean === 'boolean' ? event.wasClean : null
-            })}`);
-        };
+        socket.onopen = (event) => log(`SockJS opened: ${JSON.stringify({type: event.type})}`);
+        socket.onclose = (event) => log(`SockJS closed: ${JSON.stringify({
+            code: event?.code ?? null,
+            reason: event?.reason ?? '',
+            wasClean: event?.wasClean ?? null
+        })}`);
 
         stompClient = StompLib.over(socket);
-        stompClient.debug = (message) => log(`STOMP debug: ${message}`);
         if (stompClient.heartbeat) {
             stompClient.heartbeat.outgoing = 0;
             stompClient.heartbeat.incoming = 0;
             log('Heartbeat disabled (outgoing=0, incoming=0)');
         }
-        stompClient.onWebSocketClose = (event) => {
-            const info = {
-                code: event && typeof event.code === 'number' ? event.code : null,
-                reason: event && event.reason ? event.reason : '',
-                wasClean: event && typeof event.wasClean === 'boolean' ? event.wasClean : null
-            };
-            log(`WebSocket closed: ${JSON.stringify(info)}`);
-        };
-        stompClient.onWebSocketError = (event) => {
-            log(`WebSocket error: ${event && event.type ? event.type : 'unknown'}`);
-        };
+        stompClient.onWebSocketClose = (event) => log(`WebSocket closed: ${JSON.stringify({
+            code: event?.code ?? null,
+            reason: event?.reason ?? '',
+            wasClean: event?.wasClean ?? null
+        })}`);
+        stompClient.onWebSocketError = (event) => log(`WebSocket error: ${event?.type ?? 'unknown'}`);
         stompClient.onStompError = (frame) => {
             log(`STOMP error: ${frame.headers['message'] || 'no-message'}`);
             if (frame.body) {
                 log(`STOMP error body: ${frame.body}`);
             }
         };
+
         stompClient.connect({}, () => {
             log('Connected');
             subscribe();
@@ -190,27 +200,22 @@
             disconnectBtn.disabled = false;
             sendBtn.disabled = false;
             sendRestBtn.disabled = false;
-        }, (error) => {
-            log(`Connection error: ${error}`);
-        });
+        }, (error) => log(`Connection error: ${error}`));
     }
 
     function defaultMessage(type, sender) {
-        const name = sender && sender.trim() ? sender.trim() : '익명';
+        const name = sender?.trim() || '익명';
         switch (type) {
-            case 'ENTER':
-                return `${name} 님이 입장했습니다.`;
-            case 'LEAVE':
-                return `${name} 님이 퇴장했습니다.`;
-            default:
-                return '';
+            case 'ENTER': return `${name} 님이 입장했습니다.`;
+            case 'LEAVE': return `${name} 님이 퇴장했습니다.`;
+            default: return '';
         }
     }
 
     function disconnect() {
-        if (subscription) {
-            subscription.unsubscribe();
-            subscription = null;
+        while (subscriptions.length) {
+            const sub = subscriptions.pop();
+            try { sub.unsubscribe(); } catch (ignore) {}
         }
         if (stompClient) {
             stompClient.disconnect(() => log('Disconnected'));
@@ -224,12 +229,26 @@
 
     function subscribe() {
         const roomId = roomInput.value.trim();
-        const destination = `/topic/chat/${roomId}`;
-        subscription = stompClient.subscribe(destination, (message) => {
-            const body = JSON.parse(message.body);
-            logHeaderAndPayload('Received', message.headers, body);
-        });
-        log(`Subscribed to ${destination}`);
+        const topicDestination = `/topic/chat/${roomId}`;
+        const tryDestination = `/user/queue/try`;
+
+        subscriptions.push(
+            stompClient.subscribe(topicDestination, (message) => {
+                let body = message.body;
+                try { body = JSON.parse(message.body); } catch {}
+                logBlock(`Received ${topicDestination}`, message.headers, body);
+            })
+        );
+        log(`Subscribed to ${topicDestination}`);
+
+        subscriptions.push(
+            stompClient.subscribe(tryDestination, (message) => {
+                let body = message.body;
+                try { body = JSON.parse(message.body); } catch {}
+                logBlock(`Received ${tryDestination}`, message.headers, body);
+            })
+        );
+        log(`Subscribed to ${tryDestination}`);
     }
 
     function sendStomp() {
@@ -239,7 +258,7 @@
         }
         const roomId = roomInput.value.trim();
         let messageContent = contentInput.value;
-        if (!messageContent || !messageContent.trim()) {
+        if (!messageContent?.trim()) {
             messageContent = defaultMessage(typeSelect.value, senderInput.value);
             contentInput.value = messageContent;
         }
@@ -253,13 +272,13 @@
             headers['X-Ouroboros-Try'] = 'on';
         }
         stompClient.send(`/app/chat/${roomId}`, headers, JSON.stringify(payload));
-        logHeaderAndPayload('STOMP sent', headers, payload);
+        logBlock('STOMP sent', headers, payload);
     }
 
     async function sendRest() {
         const roomId = roomInput.value.trim();
         let messageContent = contentInput.value;
-        if (!messageContent || !messageContent.trim()) {
+        if (!messageContent?.trim()) {
             messageContent = defaultMessage(typeSelect.value, senderInput.value);
             contentInput.value = messageContent;
         }
@@ -273,16 +292,11 @@
         try {
             const response = await fetch(`/api/chat/${roomId}/send`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...headers
-                },
+                headers: { 'Content-Type': 'application/json', ...headers },
                 body: JSON.stringify(payload)
             });
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
-            logHeaderAndPayload('REST sent', headers, payload);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            logBlock('REST sent', headers, payload);
         } catch (error) {
             log(`REST error: ${error}`);
         }
@@ -292,6 +306,8 @@
     disconnectBtn.addEventListener('click', disconnect);
     sendBtn.addEventListener('click', sendStomp);
     sendRestBtn.addEventListener('click', sendRest);
+    clearLogBtn.addEventListener('click', clearLog);
+
     typeSelect.addEventListener('change', () => {
         const suggestion = defaultMessage(typeSelect.value, senderInput.value);
         if (!contentTouched || !contentInput.value.trim() || contentInput.dataset.auto === 'true') {
@@ -301,8 +317,7 @@
     });
     senderInput.addEventListener('input', () => {
         if (contentInput.dataset.auto === 'true') {
-            const suggestion = defaultMessage(typeSelect.value, senderInput.value);
-            contentInput.value = suggestion;
+            contentInput.value = defaultMessage(typeSelect.value, senderInput.value);
         }
     });
     contentInput.addEventListener('input', () => {
@@ -314,4 +329,3 @@
 </script>
 </body>
 </html>
-
