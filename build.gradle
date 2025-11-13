@@ -29,6 +29,11 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    implementation 'io.github.springwolf:springwolf-stomp:1.17.0'
+    runtimeOnly 'io.github.springwolf:springwolf-ui:1.17.0'
+
+
 }
 
 tasks.named('test') {
