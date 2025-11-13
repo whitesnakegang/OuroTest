@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>STOMP Chat Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 16px;
+        }
+        fieldset {
+            margin-bottom: 16px;
+        }
+        #log {
+            width: 100%;
+            height: 260px;
+            border: 1px solid #ccc;
+            padding: 12px;
+            overflow-y: auto;
+            background: #f9f9f9;
+            font-family: "Fira Code", monospace;
+            font-size: 13px;
+            line-height: 1.45;
+            white-space: pre-wrap;
+        }
+        label {
+            display: inline-block;
+            width: 120px;
+        }
+        .log-divider {
+            margin: 4px 0;
+            border-bottom: 1px dashed #ccc;
+        }
+    </style>
+</head>
+<body>
+<h1>STOMP Chat Test</h1>
+
+<!-- (상단의 설정 UI는 동일) -->
+
+<fieldset>
+    <legend>연결 설정</legend>
+    <div>
+        <label for="endpoint">WS Endpoint</label>
+        <input id="endpoint" type="text" value="http://localhost:8080/ws" size="40">
+    </div>
+    <div>
+        <label for="roomId">Room ID</label>
+        <input id="roomId" type="text" value="room1">
+    </div>
+    <div>
+        <button id="connectBtn">Connect</button>
+        <button id="disconnectBtn" disabled>Disconnect</button>
+    </div>
+</fieldset>
+
+<fieldset>
+    <legend>메시지 전송</legend>
+    <div>
+        <label for="sender">Sender</label>
+        <input id="sender" type="text" value="tester">
+    </div>
+    <div>
+        <label for="content">Content</label>
+        <input id="content" type="text" value="hello stomp" size="40">
+    </div>
+    <div>
+        <label for="type">Type</label>
+        <select id="type">
+            <option value="TALK" selected>TALK</option>
+            <option value="ENTER">ENTER</option>
+            <option value="LEAVE">LEAVE</option>
+        </select>
+    </div>
+    <div>
+        <label for="tryHeader">X-Ouroboros-Try</label>
+        <input id="tryHeader" type="checkbox">
+        <span>추적 헤더 추가</span>
+    </div>
+    <div>
+        <button id="sendBtn" disabled>Send STOMP</button>
+        <button id="sendRestBtn" disabled>Send REST</button>
+    </div>
+</fieldset>
+
+<fieldset>
+    <legend>Log</legend>
+    <div>
+        <button id="clearLogBtn">Clear Log</button>
+    </div>
+    <pre id="log"></pre>
+</fieldset>
+
+<script>
+    const endpointInput = document.getElementById('endpoint');
+    const roomInput = document.getElementById('roomId');
+    const senderInput = document.getElementById('sender');
+    const contentInput = document.getElementById('content');
+    const typeSelect = document.getElementById('type');
+    const tryHeaderCheckbox = document.getElementById('tryHeader');
+    const logArea = document.getElementById('log');
+    const connectBtn = document.getElementById('connectBtn');
+    const disconnectBtn = document.getElementById('disconnectBtn');
+    const sendBtn = document.getElementById('sendBtn');
+    const sendRestBtn = document.getElementById('sendRestBtn');
+    const clearLogBtn = document.getElementById('clearLogBtn');
+
+    let stompClient = null;
+    const subscriptions = [];
+    let contentTouched = false;
+
+    function prettyJson(value) {
+        if (value == null) return 'null';
+        if (typeof value === 'string') {
+            try {
+                return JSON.stringify(JSON.parse(value), null, 2);
+            } catch {
+                return value;
+            }
+        }
+        try {
+            return JSON.stringify(value, null, 2);
+        } catch {
+            return String(value);
+        }
+    }
+
+    function log(message) {
+        const timestamp = new Date().toISOString();
+        logArea.textContent += `[${timestamp}] ${message}\n`;
+        logArea.scrollTop = logArea.scrollHeight;
+    }
+
+    function logBlock(title, headers, payload) {
+        log(`${title} headers:\n${prettyJson(headers)}`);
+        log(`${title} payload:\n${prettyJson(payload)}`);
+        logArea.innerHTML += '<div class="log-divider"></div>';
+    }
+
+    function clearLog() {
+        logArea.innerHTML = '';
+    }
+
+    function resolveStomp() {
+        const lib = window.StompJs || window.Stomp;
+        if (!lib) return null;
+
+        if (lib.Stomp && typeof lib.Stomp.over === 'function') return lib.Stomp;
+        if (lib.Client && typeof lib.over === 'function') return lib;
+        if (lib.default) {
+            const maybeDefault = lib.default;
+            if (maybeDefault.Stomp && typeof maybeDefault.Stomp.over === 'function') return maybeDefault.Stomp;
+            if (typeof maybeDefault.over === 'function') return maybeDefault;
+        }
+        if (typeof lib.over === 'function') return lib;
+        return null;
+    }
+
+    function connect() {
+        const StompLib = resolveStomp();
+        if (!StompLib || typeof StompLib.over !== 'function') {
+            log('STOMP 라이브러리가 로드되지 않았습니다.');
+            return;
+        }
+
+        const socket = new SockJS(endpointInput.value);
+        socket.onopen = (event) => log(`SockJS opened: ${JSON.stringify({type: event.type})}`);
+        socket.onclose = (event) => log(`SockJS closed: ${JSON.stringify({
+            code: event?.code ?? null,
+            reason: event?.reason ?? '',
+            wasClean: event?.wasClean ?? null
+        })}`);
+
+        stompClient = StompLib.over(socket);
+        if (stompClient.heartbeat) {
+            stompClient.heartbeat.outgoing = 0;
+            stompClient.heartbeat.incoming = 0;
+            log('Heartbeat disabled (outgoing=0, incoming=0)');
+        }
+        stompClient.onWebSocketClose = (event) => log(`WebSocket closed: ${JSON.stringify({
+            code: event?.code ?? null,
+            reason: event?.reason ?? '',
+            wasClean: event?.wasClean ?? null
+        })}`);
+        stompClient.onWebSocketError = (event) => log(`WebSocket error: ${event?.type ?? 'unknown'}`);
+        stompClient.onStompError = (frame) => {
+            log(`STOMP error: ${frame.headers['message'] || 'no-message'}`);
+            if (frame.body) {
+                log(`STOMP error body: ${frame.body}`);
+            }
+        };
+
+        stompClient.connect({}, () => {
+            log('Connected');
+            subscribe();
+            connectBtn.disabled = true;
+            disconnectBtn.disabled = false;
+            sendBtn.disabled = false;
+            sendRestBtn.disabled = false;
+        }, (error) => log(`Connection error: ${error}`));
+    }
+
+    function defaultMessage(type, sender) {
+        const name = sender?.trim() || '익명';
+        switch (type) {
+            case 'ENTER': return `${name} 님이 입장했습니다.`;
+            case 'LEAVE': return `${name} 님이 퇴장했습니다.`;
+            default: return '';
+        }
+    }
+
+    function disconnect() {
+        while (subscriptions.length) {
+            const sub = subscriptions.pop();
+            try { sub.unsubscribe(); } catch (ignore) {}
+        }
+        if (stompClient) {
+            stompClient.disconnect(() => log('Disconnected'));
+            stompClient = null;
+        }
+        connectBtn.disabled = false;
+        disconnectBtn.disabled = true;
+        sendBtn.disabled = true;
+        sendRestBtn.disabled = true;
+    }
+
+    function subscribe() {
+        const roomId = roomInput.value.trim();
+        const topicDestination = `/topic/chat/${roomId}`;
+        const tryDestination = `/user/queue/try`;
+
+        subscriptions.push(
+            stompClient.subscribe(topicDestination, (message) => {
+                let body = message.body;
+                try { body = JSON.parse(message.body); } catch {}
+                logBlock(`Received ${topicDestination}`, message.headers, body);
+            })
+        );
+        log(`Subscribed to ${topicDestination}`);
+
+        subscriptions.push(
+            stompClient.subscribe(tryDestination, (message) => {
+                let body = message.body;
+                try { body = JSON.parse(message.body); } catch {}
+                logBlock(`Received ${tryDestination}`, message.headers, body);
+            })
+        );
+        log(`Subscribed to ${tryDestination}`);
+    }
+
+    function sendStomp() {
+        if (!stompClient) {
+            log('Not connected');
+            return;
+        }
+        const roomId = roomInput.value.trim();
+        let messageContent = contentInput.value;
+        if (!messageContent?.trim()) {
+            messageContent = defaultMessage(typeSelect.value, senderInput.value);
+            contentInput.value = messageContent;
+        }
+        const payload = {
+            sender: senderInput.value,
+            content: messageContent,
+            type: typeSelect.value
+        };
+        const headers = {};
+        if (tryHeaderCheckbox.checked) {
+            headers['X-Ouroboros-Try'] = 'on';
+        }
+        stompClient.send(`/app/chat/${roomId}`, headers, JSON.stringify(payload));
+        logBlock('STOMP sent', headers, payload);
+    }
+
+    async function sendRest() {
+        const roomId = roomInput.value.trim();
+        let messageContent = contentInput.value;
+        if (!messageContent?.trim()) {
+            messageContent = defaultMessage(typeSelect.value, senderInput.value);
+            contentInput.value = messageContent;
+        }
+        const payload = {
+            sender: senderInput.value,
+            content: messageContent,
+            type: typeSelect.value
+        };
+        const headers = tryHeaderCheckbox.checked ? {'X-Ouroboros-Try': 'on'} : {};
+
+        try {
+            const response = await fetch(`/api/chat/${roomId}/send`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', ...headers },
+                body: JSON.stringify(payload)
+            });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            logBlock('REST sent', headers, payload);
+        } catch (error) {
+            log(`REST error: ${error}`);
+        }
+    }
+
+    connectBtn.addEventListener('click', connect);
+    disconnectBtn.addEventListener('click', disconnect);
+    sendBtn.addEventListener('click', sendStomp);
+    sendRestBtn.addEventListener('click', sendRest);
+    clearLogBtn.addEventListener('click', clearLog);
+
+    typeSelect.addEventListener('change', () => {
+        const suggestion = defaultMessage(typeSelect.value, senderInput.value);
+        if (!contentTouched || !contentInput.value.trim() || contentInput.dataset.auto === 'true') {
+            contentInput.value = suggestion;
+            contentInput.dataset.auto = suggestion ? 'true' : 'false';
+        }
+    });
+    senderInput.addEventListener('input', () => {
+        if (contentInput.dataset.auto === 'true') {
+            contentInput.value = defaultMessage(typeSelect.value, senderInput.value);
+        }
+    });
+    contentInput.addEventListener('input', () => {
+        contentTouched = true;
+        contentInput.dataset.auto = 'false';
+    });
+
+    typeSelect.dispatchEvent(new Event('change'));
+</script>
+</body>
+</html>
