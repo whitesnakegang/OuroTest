@@ -230,7 +230,7 @@
     function subscribe() {
         const roomId = roomInput.value.trim();
         const topicDestination = `/topic/chat/${roomId}`;
-        const tryDestination = `/user/queue/try`;
+        const tryDestination = `/user/queue/ouro/try`;
 
         subscriptions.push(
             stompClient.subscribe(topicDestination, (message) => {
