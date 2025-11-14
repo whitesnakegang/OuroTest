@@ -1,22 +1,18 @@
-package com.c102.ourotest.entity;
+package com.c102.ourotest.member.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class Member {
-    private String memberId;
+public class CreateMemberDTO {
     private String email;
     private String password;
     private String name;
     private int age;
     private String phone;
 }
-

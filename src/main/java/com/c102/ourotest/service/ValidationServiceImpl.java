@@ -1,7 +1,7 @@
 package com.c102.ourotest.service;
 
-import com.c102.ourotest.dto.MemberResponse;
-import com.c102.ourotest.repository.MemberRepository;
+import com.c102.ourotest.member.dto.MemberResponse;
+import com.c102.ourotest.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 
 @Service

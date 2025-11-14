@@ -1,9 +1,9 @@
-package com.c102.ourotest.controller;
+package com.c102.ourotest.member.controller;
 
-import com.c102.ourotest.dto.CreateMemberDTO;
-import com.c102.ourotest.dto.MemberResponse;
+import com.c102.ourotest.member.dto.CreateMemberDTO;
+import com.c102.ourotest.member.dto.MemberResponse;
 import com.c102.ourotest.service.AnalysisService;
-import com.c102.ourotest.service.MemberService;
+import com.c102.ourotest.member.service.MemberService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.util.List;
 import kr.co.ouroboros.core.global.annotation.ApiState;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/compare/members")
 @RequiredArgsConstructor
-public class CompareController {
+public class MemberController {
 
     private final MemberService memberService;
     private final AnalysisService analysisService;
