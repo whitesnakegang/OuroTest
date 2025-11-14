@@ -2,6 +2,8 @@ package com.c102.ourotest.chat.controller;
 
 import com.c102.ourotest.chat.dto.ChatMessage;
 import com.c102.ourotest.chat.service.ChatFacadeService;
+import kr.co.ouroboros.core.global.annotation.ApiState;
+import kr.co.ouroboros.core.global.annotation.ApiState.State;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -31,6 +33,7 @@ public class ChatController {
     private final ChatFacadeService chatFacadeService;
 
     @MessageMapping("/chat/{roomId}")
+    @ApiState(state = State.COMPLETED)
     public void relay(@DestinationVariable String roomId,
                       @Payload ChatMessage message) {
         ChatMessage payload = preparePayload(message, roomId);
@@ -38,6 +41,7 @@ public class ChatController {
     }
 
     @PostMapping("/api/chat/{roomId}/send")
+    @ApiState(state = State.COMPLETED)
     @ResponseBody
     public void sendViaRest(@PathVariable String roomId,
                             @RequestBody ChatMessage message) {
