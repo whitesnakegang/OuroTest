@@ -1,9 +1,9 @@
-package com.c102.ourotest.service;
+package com.c102.ourotest.member.service;
 
-import com.c102.ourotest.dto.CreateMemberDTO;
-import com.c102.ourotest.dto.MemberResponse;
-import com.c102.ourotest.entity.Member;
-import com.c102.ourotest.repository.MemberRepository;
+import com.c102.ourotest.member.dto.CreateMemberDTO;
+import com.c102.ourotest.member.dto.MemberResponse;
+import com.c102.ourotest.member.entity.Member;
+import com.c102.ourotest.member.repository.MemberRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;

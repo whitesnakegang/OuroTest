@@ -1,4 +1,4 @@
-package com.c102.ourotest.dto;
+package com.c102.ourotest.member.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,6 +1,6 @@
-package com.c102.ourotest.repository;
+package com.c102.ourotest.member.repository;
 
-import com.c102.ourotest.entity.Member;
+import com.c102.ourotest.member.entity.Member;
 import java.util.List;
 import java.util.Optional;
 

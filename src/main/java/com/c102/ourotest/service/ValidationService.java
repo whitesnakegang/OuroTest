@@ -1,6 +1,6 @@
 package com.c102.ourotest.service;
 
-import com.c102.ourotest.dto.MemberResponse;
+import com.c102.ourotest.member.dto.MemberResponse;
 
 public interface ValidationService {
     

@@ -1,7 +1,7 @@
-package com.c102.ourotest.service;
+package com.c102.ourotest.member.service;
 
-import com.c102.ourotest.dto.CreateMemberDTO;
-import com.c102.ourotest.dto.MemberResponse;
+import com.c102.ourotest.member.dto.CreateMemberDTO;
+import com.c102.ourotest.member.dto.MemberResponse;
 import java.util.List;
 
 public interface MemberService {
