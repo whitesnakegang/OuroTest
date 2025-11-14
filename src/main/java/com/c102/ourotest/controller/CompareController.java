@@ -8,6 +8,7 @@ import java.util.List;
 import kr.co.ouroboros.core.global.annotation.ApiState;
 import kr.co.ouroboros.core.global.annotation.ApiState.State;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,9 +29,9 @@ public class CompareController {
     @PostMapping
     @ApiState(state = State.COMPLETED)
     @ApiResponse(responseCode = "201")
-    public ResponseEntity<String> signup(@RequestBody CreateMemberDTO createMemberDTO) {
-        String memberId = memberService.createMember(createMemberDTO);
-        return ResponseEntity.ok(memberId);
+    public ResponseEntity<Integer> signup(@RequestBody CreateMemberDTO createMemberDTO) {
+//        String memberId = memberService.createMember(createMemberDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(1);
     }
 
     @GetMapping

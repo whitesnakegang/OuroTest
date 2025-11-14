@@ -53,9 +53,10 @@ paths:
               schema:
                 type: string
       x-ouroboros-id: 5ccfc6e3-344c-4cb4-83da-6a860714a489
-      x-ouroboros-progress: completed
+      x-ouroboros-progress: mock
       x-ouroboros-tag: none
-      x-ouroboros-diff: none
+      x-ouroboros-diff: response
+      x-ouroboros-res-log: 'Status 201: Content ''*/*'': 타입이 다릅니다 (구현=integer, 명세=string)'
   /api/compare/members/{memberId}:
     get:
       summary: 회원조회
