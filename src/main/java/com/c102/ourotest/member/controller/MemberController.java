@@ -2,7 +2,6 @@ package com.c102.ourotest.member.controller;
 
 import com.c102.ourotest.member.dto.CreateMemberDTO;
 import com.c102.ourotest.member.dto.MemberResponse;
-import com.c102.ourotest.service.AnalysisService;
 import com.c102.ourotest.member.service.MemberService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.util.List;
@@ -26,14 +25,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
 
     private final MemberService memberService;
-    private final AnalysisService analysisService;
 
     @PostMapping
     @ApiState(state = State.COMPLETED)
     @ApiResponse(responseCode = "201")
-    public ResponseEntity<Integer> signup(@RequestBody CreateMemberDTO createMemberDTO) {
-//        String memberId = memberService.createMember(createMemberDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body(1);
+    public ResponseEntity<String> signup(@RequestBody CreateMemberDTO createMemberDTO) {
+        String memberId = memberService.createMember(createMemberDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(memberId);
     }
 
     @GetMapping
@@ -48,6 +46,7 @@ public class MemberController {
 
     @GetMapping("/{memberId}")
     @ApiState(state = State.COMPLETED)
+    @ApiResponse(responseCode = "200")
     public ResponseEntity<MemberResponse> getMember(@PathVariable String memberId) {
         MemberResponse member = memberService.getMember(memberId);
         return ResponseEntity.ok(member);
@@ -58,21 +57,5 @@ public class MemberController {
     public ResponseEntity<MemberResponse> deleteMember(@PathVariable String memberId) {
         MemberResponse deletedMember = memberService.deleteMember(memberId);
         return ResponseEntity.ok(deletedMember);
-    }
-
-    @GetMapping("/analyze/{memberId}")
-    @ApiState(state = State.COMPLETED)
-    @ApiResponse(responseCode = "200")
-    public ResponseEntity<MemberResponse> analyzeMember(@PathVariable String memberId) {
-        try {
-            // 복잡한 메서드 트레이스 시작 (3 depth + self-invocation)
-            Thread.sleep(50); // Controller 진입 시점 구분을 위한 sleep
-            MemberResponse analyzedMember = analysisService.analyzeMember(memberId);
-            Thread.sleep(50); // Controller 종료 전 sleep
-            return ResponseEntity.ok(analyzedMember);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException(e);
-        }
     }
 }

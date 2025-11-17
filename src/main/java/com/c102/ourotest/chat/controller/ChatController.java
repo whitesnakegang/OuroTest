@@ -33,18 +33,9 @@ public class ChatController {
     private final ChatFacadeService chatFacadeService;
 
     @MessageMapping("/chat/{roomId}")
-    @ApiState(state = State.COMPLETED)
+//    @ApiState(state = State.COMPLETED)
     public void relay(@DestinationVariable String roomId,
                       @Payload ChatMessage message) {
-        ChatMessage payload = preparePayload(message, roomId);
-        messagingTemplate.convertAndSend(topic(roomId), payload);
-    }
-
-    @PostMapping("/api/chat/{roomId}/send")
-    @ApiState(state = State.COMPLETED)
-    @ResponseBody
-    public void sendViaRest(@PathVariable String roomId,
-                            @RequestBody ChatMessage message) {
         ChatMessage payload = preparePayload(message, roomId);
         messagingTemplate.convertAndSend(topic(roomId), payload);
     }

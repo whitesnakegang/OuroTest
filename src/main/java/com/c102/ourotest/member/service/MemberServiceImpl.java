@@ -65,7 +65,8 @@ public class MemberServiceImpl implements MemberService {
                 member.getEmail(),
                 member.getName(),
                 member.getAge(),
-                member.getPhone()
+                member.getPhone(),
+                "존재하지 않는 필드"
         );
     }
 }

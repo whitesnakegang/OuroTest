@@ -7,15 +7,17 @@ paths:
     get:
       deprecated: false
       tags:
-      - COMPARE-CONTROLLER
+      - MEMBER
       parameters:
       - name: page
         in: query
+        description: 'Query parameter: page'
         required: true
         schema:
           type: integer
       - name: size
         in: query
+        description: 'Query parameter: size'
         required: true
         schema:
           type: integer
@@ -23,169 +25,324 @@ paths:
         '200':
           description: OK
           content:
-            '*/*':
+            application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/com.c102.ourotest.dto.MemberResponse'
+                  $ref: '#/components/schemas/MemberResponse'
       x-ouroboros-id: 16bd6997-4679-4781-a468-e531b28dadc5
-      x-ouroboros-progress: completed
+      x-ouroboros-progress: mock
       x-ouroboros-tag: none
       x-ouroboros-diff: none
+      summary: ''
+      description: 회원 리스트 조회
     post:
       deprecated: false
       tags:
-      - COMPARE-CONTROLLER
+      - MEMBER
       requestBody:
+        description: Request body
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/com.c102.ourotest.dto.CreateMemberDTO'
+              $ref: '#/components/schemas/CreateMemberDTO'
       responses:
         '201':
           description: Created
           content:
-            '*/*':
+            application/json:
               schema:
                 type: string
       x-ouroboros-id: b1c75006-f0de-41eb-a966-7591721188dd
-      x-ouroboros-progress: completed
+      x-ouroboros-progress: mock
       x-ouroboros-tag: none
       x-ouroboros-diff: none
       x-ouroboros-response: use
+      summary: ''
+      description: 회원가입
   /api/compare/members/{memberId}:
     get:
       deprecated: false
       tags:
-      - COMPARE-CONTROLLER
-      parameters:
-      - name: memberId
-        in: path
-        required: true
-        schema:
-          type: string
+      - MEMBER
       responses:
         '200':
           description: OK
           content:
-            '*/*':
+            application/json:
               schema:
-                $ref: '#/components/schemas/com.c102.ourotest.dto.MemberResponse'
+                $ref: '#/components/schemas/MemberResponse'
       x-ouroboros-id: 8b3868e9-2689-4c20-8c2e-7256d9b101d6
-      x-ouroboros-progress: completed
+      x-ouroboros-progress: mock
       x-ouroboros-tag: none
       x-ouroboros-diff: none
+      summary: ''
+      description: 회원ID를 통한 회원조회
     delete:
       deprecated: false
       tags:
-      - COMPARE-CONTROLLER
-      parameters:
-      - name: memberId
-        in: path
-        required: true
-        schema:
-          type: string
+      - MEMBER
       responses:
         '200':
           description: OK
           content:
-            '*/*':
+            application/json:
               schema:
-                $ref: '#/components/schemas/com.c102.ourotest.dto.MemberResponse'
+                $ref: '#/components/schemas/MemberResponse'
       x-ouroboros-id: fb85b2e3-a425-4ddf-a794-83f3f93e03ec
-      x-ouroboros-progress: completed
+      x-ouroboros-progress: mock
       x-ouroboros-tag: none
       x-ouroboros-diff: none
-  /api/chat/{roomId}/send:
-    post:
-      deprecated: false
+      summary: ''
+      description: 회원ID를 통한 회원탈퇴
+  /api/books/{bookId}:
+    get:
+      summary: ''
+      description: 책을 조회할 수 있다.
       tags:
-      - chat-controller
-      parameters:
-      - name: roomId
-        in: path
-        required: true
-        schema:
-          type: string
+      - BOOK
+      responses:
+        '200':
+          description: 요청이 성공적으로 처리됨
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BookResponse'
+      x-ouroboros-id: 081993c2-189b-4dbd-b7db-4ce805fb6347
+      x-ouroboros-progress: mock
+      x-ouroboros-tag: none
+      x-ouroboros-diff: none
+  /api/products:
+    post:
+      summary: ''
+      description: 새로운 상품을 등록할 수 있다.
+      tags:
+      - PRODUCT
+      responses:
+        '201':
+          description: 리소스가 성공적으로 생성됨
+          content:
+            application/json:
+              schema:
+                type: string
+      x-ouroboros-id: cc91c51c-2430-4e38-b811-4c300a4bfdc0
+      x-ouroboros-progress: mock
+      x-ouroboros-tag: none
+      x-ouroboros-diff: none
       requestBody:
+        description: Request body
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/com.c102.ourotest.chat.dto.ChatMessage'
-      responses:
-        '200':
-          description: OK
-      x-ouroboros-id: bec4d93e-d7c6-4835-9d1a-1db113714eab
-      x-ouroboros-progress: completed
-      x-ouroboros-tag: none
-      x-ouroboros-diff: endpoint
-  /api/compare/members/analyze/{memberId}:
-    get:
-      deprecated: false
+              $ref: '#/components/schemas/CreateProductDTO'
+  /api/products/{productId}:
+    delete:
+      summary: ''
+      description: 상품을 삭제할 수 있다.
       tags:
-      - compare-controller
-      parameters:
-      - name: memberId
-        in: path
-        required: true
-        schema:
-          type: string
+      - PRODUCT
+      responses:
+        '201':
+          description: 리소스가 성공적으로 생성됨
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+      x-ouroboros-id: 1330b6c1-d344-41f0-9e75-09e60769f8ba
+      x-ouroboros-progress: mock
+      x-ouroboros-tag: none
+      x-ouroboros-diff: none
+    get:
+      summary: ''
+      description: 상품 상세 조회
+      tags:
+      - PRODUCT
       responses:
         '200':
-          description: OK
+          description: 요청이 성공적으로 처리됨
           content:
-            '*/*':
+            application/json:
               schema:
-                $ref: '#/components/schemas/com.c102.ourotest.dto.MemberResponse'
-      x-ouroboros-id: edb3d532-1180-4a89-8d23-b6931d407dbf
-      x-ouroboros-progress: completed
+                $ref: '#/components/schemas/ProductResponse'
+      x-ouroboros-id: 0a12e02f-138e-4139-aee1-b69821e13644
+      x-ouroboros-progress: mock
       x-ouroboros-tag: none
-      x-ouroboros-diff: endpoint
-      x-ouroboros-response: use
+      x-ouroboros-diff: none
 components:
   schemas:
-    com.c102.ourotest.dto.CreateMemberDTO:
+    CreateMemberDTO:
       type: object
       properties:
         email:
           type: string
+          x-ouroboros-mock: ''
         password:
           type: string
+          x-ouroboros-mock: ''
         name:
           type: string
+          x-ouroboros-mock: ''
         age:
           type: integer
           format: int32
+          x-ouroboros-mock: ''
         phone:
           type: string
-    com.c102.ourotest.chat.dto.ChatMessage:
+          x-ouroboros-mock: ''
+      x-ouroboros-orders:
+      - email
+      - password
+      - name
+      - age
+      - phone
+    ChatMessage:
       type: object
       properties:
         roomId:
           type: string
+          x-ouroboros-mock: ''
         sender:
           type: string
+          x-ouroboros-mock: ''
         content:
           type: string
+          x-ouroboros-mock: ''
         type:
           type: string
+          x-ouroboros-mock: ''
         sentAt:
           type: string
           format: date-time
-    com.c102.ourotest.dto.MemberResponse:
+          x-ouroboros-mock: ''
+      x-ouroboros-orders:
+      - roomId
+      - sender
+      - content
+      - type
+      - sentAt
+    MemberResponse:
       type: object
       properties:
         email:
           type: string
+          x-ouroboros-mock: ''
         name:
           type: string
+          x-ouroboros-mock: ''
         age:
           type: integer
           format: int32
+          x-ouroboros-mock: ''
         phone:
           type: string
+          x-ouroboros-mock: ''
+      x-ouroboros-orders:
+      - email
+      - name
+      - age
+      - phone
+    BookResponse:
+      type: object
+      title: BookResponse Schema
+      description: BookResponse 스키마 정의
+      properties:
+        title:
+          type: string
+          x-ouroboros-mock: '{{$book.title}}'
+        author:
+          type: string
+          x-ouroboros-mock: '{{$book.author}}'
+        publisher:
+          type: string
+          x-ouroboros-mock: '{{$book.publisher}}'
+        genre:
+          type: string
+          x-ouroboros-mock: '{{$book.genre}}'
+      x-ouroboros-orders:
+      - title
+      - author
+      - publisher
+      - genre
+    CreateProductDTO:
+      type: object
+      title: CreateProductDTO Schema
+      description: 새로운 상품을 등록
+      properties:
+        name:
+          type: string
+          x-ouroboros-mock: '{{$commerce.productName}}'
+        price:
+          type: integer
+          x-ouroboros-mock: '{{$commerce.price}}'
+        department:
+          type: string
+          x-ouroboros-mock: '{{$commerce.department}}'
+        material:
+          type: string
+          x-ouroboros-mock: '{{$commerce.material}}'
+        brand:
+          type: string
+          x-ouroboros-mock: '{{$commerce.brand}}'
+      x-ouroboros-orders:
+      - name
+      - price
+      - department
+      - material
+      - brand
+    ProductResponse:
+      type: object
+      title: ProductResponse Schema
+      description: 상품 응답 스키마
+      properties:
+        id:
+          type: string
+          x-ouroboros-mock: '{{$internet.uuid}}'
+        name:
+          type: string
+          x-ouroboros-mock: '{{$commerce.productName}}'
+        price:
+          type: integer
+          x-ouroboros-mock: '{{$commerce.price}}'
+        department:
+          type: string
+          x-ouroboros-mock: '{{$commerce.department}}'
+        material:
+          type: string
+          x-ouroboros-mock: '{{$commerce.material}}'
+        brand:
+          type: string
+          x-ouroboros-mock: '{{$commerce.brand}}'
+      x-ouroboros-orders:
+      - id
+      - name
+      - price
+      - department
+      - material
+      - brand
+    Employee:
+      type: object
+      title: Employee Schema
+      description: Employee 스키마 정의
+      properties:
+        title:
+          type: string
+          x-ouroboros-mock: '{{$job.title}}'
+        field:
+          type: string
+          x-ouroboros-mock: '{{$job.field}}'
+        position:
+          type: string
+          x-ouroboros-mock: '{{$job.position}}'
+        keySkills:
+          type: string
+          x-ouroboros-mock: '{{$job.keySkills}}'
+      x-ouroboros-orders:
+      - title
+      - field
+      - position
+      - keySkills
 servers:
 - url: http://localhost:8080
   description: Generated server url
