@@ -96,23 +96,6 @@ paths:
       x-ouroboros-diff: none
       summary: ''
       description: 회원ID를 통한 회원탈퇴
-  /api/books/{bookId}:
-    get:
-      summary: ''
-      description: 책을 조회할 수 있다.
-      tags:
-      - BOOK
-      responses:
-        '200':
-          description: 요청이 성공적으로 처리됨
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BookResponse'
-      x-ouroboros-id: 081993c2-189b-4dbd-b7db-4ce805fb6347
-      x-ouroboros-progress: mock
-      x-ouroboros-tag: none
-      x-ouroboros-diff: none
   /api/products:
     post:
       summary: ''

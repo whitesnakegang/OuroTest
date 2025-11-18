@@ -17,7 +17,8 @@ public class JobController {
     @PostMapping("/samsung")
     @ApiResponse(responseCode = "201")
 //    @ApiState(state = State.COMPLETED)
-    public ResponseEntity<String> hireEmployeeToSamsung(@RequestBody Employee employee) {
-        return ResponseEntity.status(HttpStatus.CREATED).body("삼성 취뽀 성공!");
+    public ResponseEntity<EmploymentResponse> hireEmployeeToSamsung(@RequestBody Employee employee) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new EmploymentResponse("samsung", "backend"));
     }
 }
