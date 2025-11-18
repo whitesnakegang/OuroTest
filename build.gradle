@@ -21,7 +21,7 @@ repositories {
 
 dependencies {
 
-    implementation 'io.github.whitesnakegang:ouroboros:1.0.2-SNAPSHOT'
+    implementation 'io.github.whitesnakegang:ouroboros:1.0.3-SNAPSHOT'
     implementation 'io.swagger.core.v3:swagger-annotations:2.2.40'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
