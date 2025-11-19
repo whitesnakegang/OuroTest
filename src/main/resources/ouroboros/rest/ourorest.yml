@@ -304,28 +304,6 @@ components:
       - department
       - material
       - brand
-    Employee:
-      type: object
-      title: Employee Schema
-      description: Employee 스키마 정의
-      properties:
-        title:
-          type: string
-          x-ouroboros-mock: '{{$job.title}}'
-        field:
-          type: string
-          x-ouroboros-mock: '{{$job.field}}'
-        position:
-          type: string
-          x-ouroboros-mock: '{{$job.position}}'
-        keySkills:
-          type: string
-          x-ouroboros-mock: '{{$job.keySkills}}'
-      x-ouroboros-orders:
-      - title
-      - field
-      - position
-      - keySkills
 servers:
 - url: http://localhost:8080
   description: Generated server url

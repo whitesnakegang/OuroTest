@@ -3,14 +3,135 @@ info:
   title: WebSocket API Documentation
   version: 1.0.0
 defaultContentType: application/json
-servers: {
-  }
-channels: {
-  }
-operations: {
-  }
+servers:
+  ws-ws:
+    host: localhost:8080
+    pathname: /ws
+    protocol: ws
+    description: WS WebSocket server at /ws
+channels:
+  _app_chat_message:
+    address: /app/chat.message
+    messages:
+      ChatMessage:
+        $ref: '#/components/messages/ChatMessage'
+    bindings:
+      stomp: {
+        }
+    x-ouroboros-id: 981ef56a-3064-4180-a5e8-0a8dcc28c03f
+    x-ouroboros-progress: mock
+    x-ouroboros-tag: none
+    x-ouroboros-diff: none
+    x-ouroboros-isvalid: true
+  _topic_public:
+    address: /topic/public
+    messages:
+      ChatMessage:
+        $ref: '#/components/messages/ChatMessage'
+    bindings:
+      stomp: {
+        }
+    x-ouroboros-id: 1b9229f2-6aa4-4307-9130-afb949771fcb
+    x-ouroboros-progress: mock
+    x-ouroboros-tag: none
+    x-ouroboros-diff: none
+    x-ouroboros-isvalid: true
+  _app_chat_{roomId}:
+    address: /app/chat/{roomId}
+    messages:
+      ChatMessage:
+        $ref: '#/components/messages/ChatMessage'
+    bindings:
+      stomp: {
+        }
+    x-ouroboros-id: 9e47cde6-3d65-4069-81f5-fe5cc29c3a4f
+    x-ouroboros-progress: mock
+    x-ouroboros-tag: none
+    x-ouroboros-diff: none
+    x-ouroboros-isvalid: true
+operations:
+  _chat.message_receive_message:
+    action: receive
+    channel:
+      $ref: '#/channels/_app_chat_message'
+    bindings:
+      stomp: {
+        }
+    messages:
+    - $ref: '#/channels/_app_chat_message/messages/ChatMessage'
+    reply:
+      channel:
+        $ref: '#/channels/_topic_public'
+      messages:
+      - $ref: '#/channels/_topic_public/messages/ChatMessage'
+    x-ouroboros-id: 6fbd4fa0-1512-47fb-9ad3-23eae41af245
+    x-ouroboros-diff: none
+    x-ouroboros-progress: completed
+    x-ouroboros-entrypoint: /ws
+    tags:
+    - name: OTHERS
+    x-ouroboros-tag: none
+  _chat_{roomId}_receive_relay:
+    action: receive
+    channel:
+      $ref: '#/channels/_app_chat_{roomId}'
+    bindings:
+      stomp: {
+        }
+    messages:
+    - $ref: '#/channels/_app_chat_{roomId}/messages/ChatMessage'
+    x-ouroboros-id: 3dda1faa-efcc-438b-b1d8-9861764a5b09
+    x-ouroboros-diff: none
+    x-ouroboros-progress: none
+    x-ouroboros-entrypoint: /ws
+    tags:
+    - name: OTHERS
+    x-ouroboros-tag: none
 components:
-  schemas: {
-    }
-  messages: {
-    }
+  schemas:
+    SpringStompDefaultHeaders:
+      title: SpringStompDefaultHeaders
+      type: object
+      properties: {
+        }
+      examples:
+      - {
+        }
+    ChatMessage:
+      title: ChatMessage
+      type: object
+      properties:
+        sender:
+          type: string
+        sentAt:
+          type: string
+          format: date-time
+        type:
+          type: string
+          enum:
+          - ENTER
+          - TALK
+          - LEAVE
+        roomId:
+          type: string
+        content:
+          type: string
+      examples:
+      - content: string
+        roomId: string
+        sender: string
+        sentAt: '2015-07-20T15:49:04-07:00'
+        type: ENTER
+  messages:
+    ChatMessage:
+      name: ChatMessage
+      title: ChatMessage
+      headers:
+        $ref: '#/components/schemas/SpringStompDefaultHeaders'
+      payload:
+        schemaFormat: application/vnd.aai.asyncapi+json;version=3.0.0
+        schema:
+          $ref: '#/components/schemas/ChatMessage'
+      bindings:
+        stomp: {
+          }

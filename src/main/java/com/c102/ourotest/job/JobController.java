@@ -27,11 +27,11 @@ public class JobController {
                 .body(new EmploymentResponse("samsung", "backend"));
     }
 
-//    @PostMapping("/ssafy")
-//    @ApiResponse(responseCode = "201")
-//    @ApiState(state = State.COMPLETED)
-//    public ResponseEntity<String> helloSsafy(@RequestBody String employee) {
-//        jobService.service();
-//        return ResponseEntity.status(HttpStatus.CREATED).body("자율 프로젝트 성공!");
-//    }
+    @PostMapping("/ssafy")
+    @ApiResponse(responseCode = "201")
+    @ApiState(state = State.COMPLETED)
+    public ResponseEntity<String> helloSsafy() {
+        jobService.service();
+        return ResponseEntity.status(HttpStatus.CREATED).body("자율 프로젝트 성공!");
+    }
 }

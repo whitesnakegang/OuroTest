@@ -8,12 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * STOMP 테스트 가이드
@@ -32,8 +29,16 @@ public class ChatController {
     private final SimpMessagingTemplate messagingTemplate;
     private final ChatFacadeService chatFacadeService;
 
+    @MessageMapping("/chat.message")
+    @ApiState(state = State.COMPLETED)
+    @SendTo("/topic/public")
+    public ChatMessage message(
+            @Payload ChatMessage message) {
+        return message;
+    }
+
     @MessageMapping("/chat/{roomId}")
-//    @ApiState(state = State.COMPLETED)
+    @ApiState(state = State.COMPLETED)
     public void relay(@DestinationVariable String roomId,
                       @Payload ChatMessage message) {
         ChatMessage payload = preparePayload(message, roomId);
