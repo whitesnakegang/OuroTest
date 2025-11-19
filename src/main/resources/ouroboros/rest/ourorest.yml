@@ -176,6 +176,29 @@ paths:
       x-ouroboros-tag: none
       x-ouroboros-diff: none
       x-ouroboros-response: use
+  /api/jobs/ssafy:
+    post:
+      deprecated: false
+      tags:
+      - JOB-CONTROLLER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SMessage'
+      responses:
+        '201':
+          description: Created
+          content:
+            '*/*':
+              schema:
+                type: string
+      x-ouroboros-id: cce3c995-4949-4864-8fa2-5042b0c479e1
+      x-ouroboros-progress: mock
+      x-ouroboros-tag: none
+      x-ouroboros-diff: none
+      x-ouroboros-response: use
 components:
   schemas:
     CreateMemberDTO:
@@ -346,20 +369,33 @@ components:
       properties:
         content:
           type: string
+          x-ouroboros-mock: ''
+      x-ouroboros-orders:
+      - content
     MyPageRequest:
       type: object
       properties:
         id:
           type: string
+          x-ouroboros-mock: ''
+      x-ouroboros-orders:
+      - id
     MyPageDto:
       type: object
       properties:
         name:
           type: string
+          x-ouroboros-mock: ''
         address:
           type: string
+          x-ouroboros-mock: ''
         phone:
           type: string
+          x-ouroboros-mock: ''
+      x-ouroboros-orders:
+      - name
+      - address
+      - phone
 servers:
 - url: http://localhost:8080
   description: Generated server url
