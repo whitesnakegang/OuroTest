@@ -153,6 +153,29 @@ paths:
       x-ouroboros-progress: mock
       x-ouroboros-tag: none
       x-ouroboros-diff: none
+  /api/me:
+    get:
+      deprecated: false
+      tags:
+      - MY-PAGE-CONTROLLER
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MyPageRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/MyPageDto'
+      x-ouroboros-id: b3d7cc32-a908-4ba6-bed5-d8ce2a0d79af
+      x-ouroboros-progress: mock
+      x-ouroboros-tag: none
+      x-ouroboros-diff: none
+      x-ouroboros-response: use
 components:
   schemas:
     CreateMemberDTO:
@@ -311,11 +334,32 @@ components:
       properties:
         name:
           type: string
+          x-ouroboros-mock: ''
         position:
           type: string
+          x-ouroboros-mock: ''
       x-ouroboros-orders:
       - name
       - position
+    SMessage:
+      type: object
+      properties:
+        content:
+          type: string
+    MyPageRequest:
+      type: object
+      properties:
+        id:
+          type: string
+    MyPageDto:
+      type: object
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+        phone:
+          type: string
 servers:
 - url: http://localhost:8080
   description: Generated server url
