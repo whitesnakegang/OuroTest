@@ -304,6 +304,18 @@ components:
       - department
       - material
       - brand
+    Employee:
+      type: object
+      title: Employee Schema
+      description: Employee schema definition
+      properties:
+        name:
+          type: string
+        position:
+          type: string
+      x-ouroboros-orders:
+      - name
+      - position
 servers:
 - url: http://localhost:8080
   description: Generated server url
