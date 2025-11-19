@@ -1,5 +1,6 @@
 package com.c102.ourotest.job;
 
+import com.c102.ourotest.job.dto.SMessage;
 import com.c102.ourotest.job.service.JobService;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import kr.co.ouroboros.core.global.annotation.ApiState;
@@ -30,7 +31,7 @@ public class JobController {
     @PostMapping("/ssafy")
     @ApiResponse(responseCode = "201")
     @ApiState(state = State.COMPLETED)
-    public ResponseEntity<String> helloSsafy() {
+    public ResponseEntity<String> helloSsafy(@RequestBody SMessage message) {
         jobService.service();
         return ResponseEntity.status(HttpStatus.CREATED).body("자율 프로젝트 성공!");
     }
