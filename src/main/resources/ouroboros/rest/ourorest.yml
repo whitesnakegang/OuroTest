@@ -178,27 +178,28 @@ paths:
       x-ouroboros-response: use
   /api/me:
     get:
-      deprecated: false
+      summary: KB
+      description: 내 정보 조회
       tags:
-      - MY-PAGE-CONTROLLER
+      - MYPAGE
       parameters:
       - name: id
         in: query
-        required: true
+        description: 'Query parameter: id'
+        required: false
         schema:
           type: string
       responses:
         '200':
-          description: OK
+          description: Successfully processed request
           content:
-            '*/*':
+            application/json:
               schema:
                 $ref: '#/components/schemas/MyPageDto'
-      x-ouroboros-id: e8ed0740-83df-4265-bbe1-a3ca98b57d45
+      x-ouroboros-id: 76702e8b-01e3-4377-b747-3aa8f9c80853
       x-ouroboros-progress: mock
       x-ouroboros-tag: none
       x-ouroboros-diff: none
-      x-ouroboros-response: use
 components:
   schemas:
     CreateMemberDTO:
@@ -372,26 +373,18 @@ components:
           x-ouroboros-mock: ''
       x-ouroboros-orders:
       - content
-    MyPageRequest:
-      type: object
-      properties:
-        id:
-          type: string
-          x-ouroboros-mock: ''
-      x-ouroboros-orders:
-      - id
     MyPageDto:
       type: object
       properties:
         name:
           type: string
-          x-ouroboros-mock: ''
+          x-ouroboros-mock: '{{$name.fullName}}'
         address:
           type: string
-          x-ouroboros-mock: ''
+          x-ouroboros-mock: '{{$address.city}}'
         phone:
           type: string
-          x-ouroboros-mock: ''
+          x-ouroboros-mock: '{{$phoneNumber.phoneNumber}}'
       x-ouroboros-orders:
       - name
       - address
