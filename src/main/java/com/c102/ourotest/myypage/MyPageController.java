@@ -6,7 +6,7 @@ import kr.co.ouroboros.core.global.annotation.ApiState.State;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -16,7 +16,7 @@ public class MyPageController {
     @ApiState(state = State.COMPLETED)
     @ApiResponse(responseCode = "200")
     @GetMapping("/api/me")
-    public ResponseEntity<MyPageDto> getMyInfo(@RequestBody MyPageRequest req ){
+    public ResponseEntity<MyPageDto> getMyInfo(@RequestParam("id") String id, @RequestParam("pw") String pw ){
         return ResponseEntity.ok(new MyPageDto("방준엽", "장덕동", "010-1234-1234"));
     }
 }
