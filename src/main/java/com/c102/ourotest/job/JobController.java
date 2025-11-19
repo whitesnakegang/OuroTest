@@ -20,13 +20,13 @@ public class JobController {
 
     private final JobService jobService;
 
-    @PostMapping("/samsung")
-    @ApiResponse(responseCode = "201")
+//    @PostMapping("/samsung")
+//    @ApiResponse(responseCode = "201")
 //    @ApiState(state = State.COMPLETED)
-    public ResponseEntity<EmploymentResponse> hireEmployeeToSamsung(@RequestBody Employee employee) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new EmploymentResponse("samsung", "backend"));
-    }
+//    public ResponseEntity<EmploymentResponse> hireEmployeeToSamsung(@RequestBody Employee employee) {
+//        return ResponseEntity.status(HttpStatus.CREATED)
+//                .body(new EmploymentResponse("samsung", "backend"));
+//    }
 
     @PostMapping("/ssafy")
     @ApiResponse(responseCode = "201")
