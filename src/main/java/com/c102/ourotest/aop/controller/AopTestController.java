@@ -51,12 +51,8 @@ public class AopTestController {
         System.out.println("\n[2] Self-invocation 테스트 (public -> public):");
         aopTestService.callInternalPublicMethod();
 
-        // 3. 같은 메서드를 외부에서 호출하면 AOP 작동
-        System.out.println("\n[3] 같은 메서드를 외부에서 호출:");
-        aopTestService.internalPublicMethod();
-
-        // 4. Private 메서드 호출
-        System.out.println("\n[4] Private 메서드 호출 테스트:");
+        // 3. Private 메서드 호출
+        System.out.println("\n[3] Private 메서드 호출 테스트:");
         aopTestService.callPrivateMethod();
 
         System.out.println("\n=== Self-Invocation Test End ===\n");
