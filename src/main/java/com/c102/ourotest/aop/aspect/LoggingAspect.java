@@ -16,10 +16,7 @@ public class LoggingAspect {
     @Before("execution(* com.c102.ourotest.aop.service.*.*(..))")
     public void logBefore(JoinPoint joinPoint) {
         String methodName = joinPoint.getSignature().getName();
-    public void logBefore(JoinPoint joinPoint) {
-        String methodName = joinPoint.getSignature().getName();
         String className = joinPoint.getSignature().getDeclaringType().getSimpleName();
         logger.info("🔍 [AOP] {} 호출됨 - 클래스: {}", methodName, className);
-    }
     }
 }
