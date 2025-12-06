@@ -24,7 +24,7 @@ repositories {
 
 dependencies {
 
-    implementation 'io.github.whitesnakegang:ouroboros:1.0.6-SNAPSHOT'
+    implementation 'io.github.whitesnakegang:ouroboros:1.0.6'
 
     // AspectJ dependencies - Required for ASPECTJ mode
     aspect 'io.github.whitesnakegang:ouroboros:1.0.6-SNAPSHOT'
