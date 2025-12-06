@@ -80,9 +80,9 @@ public class AopTestController {
             finalClassService.finalClassMethod();
         } else {
             System.out.println("⚠️ FinalClassService는 비활성화되어 있습니다.");
-            System.out.println("💡 활성화하려면 application.properties에 'aop.test.final-class.enabled=true'를 추가하세요.");
-            System.out.println("💡 활성화 시 'Cannot subclass final class' 오류가 발생합니다 (CGLIB 제한사항)");
-            response.put("final_class_note", "Final 클래스는 CGLIB 프록시 생성 불가 - 활성화하면 애플리케이션 시작 실패");
+            System.out.println("💡 활성화하려면 application.properties에 'ouroboros.method-tracing.mode=ASPECTJ'를 설정하세요.");
+            System.out.println("💡 ASPECTJ 모드에서는 AspectJ 위빙을 통해 final 클래스도 AOP가 적용됩니다.");
+            response.put("final_class_note", "Final 클래스는 CGLIB 프록시 생성 불가 - ASPECTJ 모드에서만 활성화됨");
         }
 
         // 2. Static 메서드 테스트
