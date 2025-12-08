@@ -2,6 +2,9 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.6'
     id 'io.spring.dependency-management' version '1.1.7'
+
+    // AspectJ plugin - Required for ASPECTJ mode method tracing
+    id 'io.freefair.aspectj.post-compile-weaving' version '8.11'
 }
 
 group = 'com.c102'
@@ -21,7 +24,12 @@ repositories {
 
 dependencies {
 
-    implementation 'io.github.whitesnakegang:ouroboros:1.0.5'
+    implementation 'io.github.whitesnakegang:ouroboros:1.0.6'
+
+    // AspectJ dependencies - Required for ASPECTJ mode
+    aspect 'io.github.whitesnakegang:ouroboros:1.0.6-SNAPSHOT'
+    aspect 'org.aspectj:aspectjweaver:1.9.22'
+
     implementation 'io.swagger.core.v3:swagger-annotations:2.2.40'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'

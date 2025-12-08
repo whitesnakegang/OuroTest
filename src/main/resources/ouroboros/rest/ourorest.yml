@@ -200,6 +200,42 @@ paths:
       x-ouroboros-progress: mock
       x-ouroboros-tag: none
       x-ouroboros-diff: none
+  /api/aop-test/self-invocation:
+    get:
+      deprecated: false
+      tags:
+      - AOP-TEST-CONTROLLER
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties: {
+                  }
+      x-ouroboros-id: c3968c8f-c86b-4310-a3e1-6d2157e93b42
+      x-ouroboros-progress: mock
+      x-ouroboros-tag: none
+      x-ouroboros-diff: none
+  /api/aop-test/cglib-limitations:
+    get:
+      deprecated: false
+      tags:
+      - AOP-TEST-CONTROLLER
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties: {
+                  }
+      x-ouroboros-id: d1dcfc1a-a27a-46e1-a2b7-210fde3cece2
+      x-ouroboros-progress: mock
+      x-ouroboros-tag: none
+      x-ouroboros-diff: none
 components:
   schemas:
     CreateMemberDTO:
